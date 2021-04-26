@@ -1,0 +1,151 @@
+.align-left { text-align: left; } 
+.align-center { text-align: center; } 
+.align-right { text-align: right; } 
+.align-justify { text-align: justify; }
+
+.background-color {
+background-color: #345365;	
+}
+
+.fmb-font-color{
+    color: white;
+}
+
+html, body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
+
+.dashboard-header {
+      border-style: outset;
+      background-color:  #223635	;
+}
+
+
+.margin-left{
+    margin-left: 40px !important;
+}
+
+.margin-bottom{
+    margin-bottom: 15px !important;
+}
+.margin-top{
+    margin-top: 0px !important;
+}
+
+
+.btn-search-size{
+    width: 139px;
+    height: 78px;
+    font-size: 35px;
+}
+
+#dataGrid .jsgrid-header-row .jsgrid-header-cell{
+width:30px;
+background-color:#294855;
+color:white;
+font-size: 20px;
+}
+
+#dataGrid .jsgrid-grid-body .jsgrid-cell{
+width:30px;
+background-color:#264050	;
+color:white;
+font-size: 20px;
+}
+
+#dataGrid .jsgrid-header-row{
+    border-bottom: solid #276890	;
+}
+
+.active-button{
+    background: #83B5E1;
+}
+.active-button-date{
+    background: #83B5E1;
+}
+
+
+.active-button:focus{
+    background: #83B5E1;
+}
+
+.active-button-date:focus{
+    background: #83B5E1;
+}
+
+.btn-oper-size{
+    width: 120px;
+    height: 80px;
+    font-size: 40px;
+}
+
+#txtBarcode{
+    font-size: 35px;
+    height: 76px;
+}
+
+#btnSearch_txt{
+    height: 78px;
+    font-size: 30px;
+}
+
+.btn-grid-size{
+    width: 130px;
+    font-size: 30px;
+}
+
+.msg-text{
+    color: white;
+}
+
+#dataGrid .jsgrid-header-row .jsgrid-header-cell {
+    font-size: 23px;
+}
+
+
+
+#dataGrid .jsgrid-grid-body .jsgrid-cell {
+ 
+    font-size: 23px;
+}
+
+
+.jsgrid-table tbody tr:nth-child(1) > .jsgrid-cell{
+   background-color: #83B5E1 !important; 
+}
+
+/* .jsgrid-table tbody{
+    overflow-y: auto;
+} */
+
+.nav-bar{
+    background-color: #66BDCC;
+    height: 100%;
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+.main{
+    background-color:#313854;
+    height: 100%;
+}
+.tabs-left{
+font-size: 25px;
+color: whitesmoke;
+}
+
+
+.tabs-left > li > a{
+color: whitesmoke;
+}
+
+.tabs-left > li > a:hover{
+color: black;
+}
+
+#historyMng  form label{
+    color: white;
+}

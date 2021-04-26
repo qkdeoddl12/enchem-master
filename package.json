@@ -1,0 +1,28 @@
+{
+  "name": "plc-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^3.2.0",
+    "base64-js": "^1.5.1",
+    "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "dateformat": "^4.5.1",
+    "excel4node": "^1.7.2",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "fs": "0.0.1-security",
+    "moment": "^2.29.1",
+    "mysql": "^2.18.1",
+    "node-excel-export": "^1.4.4",
+    "nodejs-aes256": "^1.0.1"
+  }
+}

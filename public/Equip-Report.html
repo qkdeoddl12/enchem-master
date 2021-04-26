@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="vendor/bootstrap-3.3.2-dist/css/bootstrap.css" rel="stylesheet">
+    <link href="vendor/bootstrap-3.3.2-dist/css/bootstrap-theme.css" rel="stylesheet">
+    <link href="vendor/jsgrid-1.5.3/jsgrid-theme.css" rel="stylesheet">
+    <link href="vendor/jsgrid-1.5.3/jsgrid.css" rel="stylesheet">
+    <!-- <link href="vendor/c3-master/c3.css" rel="stylesheet"> -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.11/c3.min.css" />
+
+    <link href="css/Equip-Report.css" rel="stylesheet">
+    <link href="css/public.css" rel="stylesheet">
+    <script src="js/configData.js"></script>
+
+    <title>POP</title>
+</head>
+
+<body class="background-color">
+
+    <div class="container-fluid">
+        <div class="row">
+
+            <div class="col-sm-12 col-md-12 main">
+                <h1 class="dashboard-header align-center fmb-font-color" style="height: 70px;line-height: 60px;">설비별 가동률</h1>
+            </div>
+
+        </div>
+        <div class="row">
+
+            <div class="col-md-6">
+                <h3 class="fmb-font-color align-center">일별 가동율</h3>
+                <div class="col-md-12">
+                    <table id="wash_Grid_1" border="1">
+
+                       <tr><!-- 두번째 줄 시작 -->
+                           <td>No.</td>
+                           <td>상태</td>
+                           <td>가동시간</td>
+                           <td>실가동시간</td>
+                           <td>인당 생산성  ( 35ea/인 )</td>
+                       </tr><!-- 두번째 줄 끝 -->
+                  <tr>
+                           <td>1(1차)</td>
+                           <td id='plcData_status_1'>0</td>
+                           <td id='plcData_workTime_1'>00:00:00</td>
+                           <td id='plcData_realTIme_1'>00:00:00</td>
+                           <td id='plcData_prod_1'>0%</td>
+                       </tr>
+                        <tr>
+                            <td>2(1차)</td>
+                            <td id='plcData_status_2'>0</td>
+                            <td id='plcData_workTime_2'>00:00:00</td>
+                            <td id='plcData_realTIme_2'>00:00:00</td>
+                            <td id='plcData_prod_2'>0%</td>
+                        </tr>
+                        <tr>
+                            <td>3(1차)</td>
+                            <td id='plcData_status_3'>0</td>
+                            <td id='plcData_workTime_3'>00:00:00</td>
+                            <td id='plcData_realTIme_3'>00:00:00</td>
+                            <td id='plcData_prod_3'>0%</td>
+                        </tr>
+                   </table>
+                    <div class="col-md-12 margin-total-bottom">
+                    <h3 class="fmb-font-color align-center">소계 가동시간 :<span class="margin-total-val" id="plcData_work_sum">0</span>실가동시간 : <span
+                            class="margin-total-val" id="plcData_real_sum">0</span> 인당 생산성  ( 35ea/인 ) :
+                        <span id="plcData_prod_avg">0%</span>
+                    </h3>
+            
+                </div>
+            </h3>
+                </div>
+               
+                <h3 class="fmb-font-color align-center">2차 세정</h3>
+                <table id="wash_Grid_2" border="1">
+
+                    <tr><!-- 두번째 줄 시작 -->
+                        <td>No.</td>
+                        <td>상태</td>
+                        <td>가동시간</td>
+                        <td>실가동시간</td>
+                        <td>인당 생산성  ( 35ea/인 )</td>
+                    </tr><!-- 두번째 줄 끝 -->
+                    <tr>
+                        <td>4(2차)</td>
+                        <td id='plcData_status_4'>0</td>
+                        <td id='plcData_workTime_4'>00:00:00</td>
+                        <td id='plcData_realTIme_4'>00:00:00</td>
+                        <td id='plcData_prod_4'>0%</td>
+                    </tr>
+                    <tr>
+                        <td>5(2차)</td>
+                        <td id='plcData_status_5'>0</td>
+                        <td id='plcData_workTime_5'>00:00:00</td>
+                        <td id='plcData_realTIme_5'>00:00:00</td>
+                        <td id='plcData_prod_5'>0%</td>
+                    </tr>
+                </table>
+                <div class="col-md-12 margin-total-bottom">
+                    <h3 class="fmb-font-color align-center">소계 가동시간 : <span class="margin-total-val"  id="plcData_work_sum2">0</span>실가동시간 : <span
+                            class="margin-total-val" id="plcData_real_sum2">0</span> 인당 생산성  ( 35ea/인 ) :
+                        <span id="plcData_prod_avg2">0%</span>
+                    </h3>
+            
+                </div>
+                <div>
+                    <div id="chart1" style="height: 150px;"></div>
+                </div>
+            
+            </div>
+            <div class="col-md-6">
+                <h3 class="fmb-font-color align-center">월별 가동율</h3>
+                <table id="wash_Grid_3" border="1">
+
+                    <tr><!-- 두번째 줄 시작 -->
+                        <td>No.</td>
+                        <td>상태</td>
+                        <td>가동시간</td>
+                        <td>실가동시간</td>
+                        <td>인당 생산성  ( 35ea/인 )</td>
+                    </tr><!-- 두번째 줄 끝 -->
+                    <tr>
+                        <td>1(1차)</td>
+                        <td id='plcData_status_1_mon'>0</td>
+                        <td id='plcData_workTime_1_mon'>00:00:00</td>
+                        <td id='plcData_realTIme_1_mon'>00:00:00</td>
+                        <td id='plcData_prod_1_mon'>0%</td>
+                    </tr>
+                    <tr>
+                        <td>2(1차)</td>
+                        <td id='plcData_status_2_mon'>0</td>
+                        <td id='plcData_workTime_2_mon'>00:00:00</td>
+                        <td id='plcData_realTIme_2_mon'>00:00:00</td>
+                        <td id='plcData_prod_2_mon'>0%</td>
+                    </tr>
+                    <tr>
+                        <td>3(1차)</td>
+                        <td id='plcData_status_3_mon'>0</td>
+                        <td id='plcData_workTime_3_mon'>00:00:00</td>
+                        <td id='plcData_realTIme_3_mon'>00:00:00</td>
+                        <td id='plcData_prod_3_mon'>0%</td>
+                    </tr>
+                </table>
+                <div class="col-md-12 margin-total-bottom">
+                    <h3 class="fmb-font-color align-center">소계 가동시간 : <span class="margin-total-val" id="plcData_work_sum_mon">0</span>실가동시간 : <span
+                            class="margin-total-val" id="plcData_real_sum_mon">0</span> 인당 생산성  ( 35ea/인 ) :
+                        <span id="plcData_prod_avg_mon">0%</span>
+                    </h3>
+                
+                </div>
+                <h3 class="fmb-font-color align-center">2차 세정</h3>
+                <table id="wash_Grid_4" border="1">
+
+                    <tr><!-- 두번째 줄 시작 -->
+                        <td>No.</td>
+                        <td>상태</td>
+                        <td>가동시간</td>
+                        <td>실가동시간</td>
+                        <td>인당 생산성  ( 35ea/인 )</td>
+                    </tr><!-- 두번째 줄 끝 -->
+                    <tr>
+                        <td>4(2차)</td>
+                        <td id='plcData_status_4_mon'>0</td>
+                        <td id='plcData_workTime_4_mon'>00:00:00</td>
+                        <td id='plcData_realTIme_4_mon'>00:00:00</td>
+                        <td id='plcData_prod_4_mon'>0%</td>
+                    </tr>
+                    <tr>
+                        <td>5(2차)</td>
+                        <td id='plcData_status_5_mon'>0</td>
+                        <td id='plcData_workTime_5_mon'>00:00:00</td>
+                        <td id='plcData_realTIme_5_mon'>00:00:00</td>
+                        <td id='plcData_prod_5_mon'>0%</td>
+                    </tr>
+                    
+                </table>
+                <div class="col-md-12 margin-total-bottom">
+                    <h3 class="fmb-font-color align-center">소계 가동시간 : <span class="margin-total-val" id="plcData_work_sum2_mon">0</span>실가동시간 : <span
+                            class="margin-total-val" id="plcData_real_sum2_mon">0</span> 인당 생산성  ( 35ea/인 ) :
+                        <span id="plcData_prod_avg_mon">0%</span>
+                    </h3>
+                
+                </div>
+                <div>
+                    <div id="chart2"  style="height: 150px;"></div>
+                </div>
+              
+            </div>
+        </div>
+    </div>
+    <script src="vendor/jquery-3.5.1.js">
+    </script>
+                        <script src="vendor/bootstrap-3.3.2-dist/js/bootstrap.js"></script>
+                        <script src="vendor/jsgrid-1.5.3/jsgrid.js"></script>
+                        <!-- <script src="vendor/c3-master/c3.js"></script> -->
+                        <script src="https://d3js.org/d3.v3.min.js"></script>
+                        <script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.11/c3.min.js"></script>
+                        <script src="js/Equip-Report.js"></script>
+</body>
+
+</html>

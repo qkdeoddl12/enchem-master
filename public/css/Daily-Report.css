@@ -1,0 +1,159 @@
+.align-left { text-align: left; } 
+.align-center { text-align: center; } 
+.align-right { text-align: right; } 
+.align-justify { text-align: justify; }
+
+.background-color {
+background-color: #213241	;	
+}
+
+.fmb-font-color{
+    color: white;
+}
+
+html, body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
+
+.dashboard-header {
+      border-style: outset;
+      background-color:  #223635	;
+}
+
+
+.margin-left{
+    margin-left: 80px !important;
+}
+
+.margin-bottom{
+    margin-bottom: 30px !important;
+}
+.margin-top{
+    margin-top: 10px !important;
+}
+
+
+.btn-search-size{
+    width: 150px;
+    height: 80px;
+    font-size: 37px;
+}
+
+#wash_Grid_1 .jsgrid-header-row .jsgrid-header-cell{
+width:30px;
+background-color:#294855;
+color:white;
+/* font-size: 20px; */
+}
+
+#wash_Grid_1 .jsgrid-grid-body .jsgrid-cell{
+width:30px;
+background-color:#264050	;
+color:white;
+/* font-size: 20px; */
+}
+
+#wash_Grid_1 .jsgrid-header-row{
+    border-bottom: solid #276890	;
+}
+
+#wash_Grid_1,#wash_Grid_2{
+    width: 100%;
+    height: 200px;
+    align-content: center;
+    border: white;
+    color: white;
+    text-align: center;
+    font-size: 24px;
+}
+
+#wash_Grid_2 .jsgrid-header-row .jsgrid-header-cell{
+width:30px;
+background-color:#294855;
+color:white;
+/* font-size: 20px; */
+}
+
+#wash_Grid_2 .jsgrid-grid-body .jsgrid-cell{
+width:30px;
+background-color:#264050	;
+color:white;
+/* font-size: 20px; */
+}
+
+#wash_Grid_2 .jsgrid-header-row{
+    border-bottom: solid #276890	;
+}
+
+
+    /* #cut-diamond {
+      border-style: solid;
+      border-color: transparent transparent pink transparent;
+      border-width: 0 25px 25px 25px;
+      height: 0;
+      width: 50px;
+      box-sizing: content-box;
+      position: relative;
+      margin: 20px 0 50px 0;
+    }
+    #cut-diamond:after {
+      content: "";
+      position: absolute;
+      top: 25px;
+      left: -25px;
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-color: pink transparent transparent transparent;
+      border-width: 70px 50px 0 50px;
+    } */
+
+
+    svg.radial-progress {
+  height: auto;
+  max-width: 200px;
+  padding: 1em;
+  transform: rotate(-90deg);
+  width: 100%;
+}
+
+svg.radial-progress circle {
+  fill: rgba(0,0,0,0);
+  stroke: rgb(83, 218, 241);
+  stroke-dashoffset: 219.91148575129; 
+  stroke-width: 10;
+}
+
+svg.radial-progress circle.incomplete { opacity: 0.25; }
+
+svg.radial-progress circle.complete { stroke-dasharray: 219.91148575129; }
+
+svg.radial-progress text {
+  fill: #35f283	;
+  text-anchor: middle;
+}
+
+
+
+.radial-progress-wrapper{
+    /* position: absolute; */
+    /* top: 130%; */
+    /* left: 35%; */
+}
+
+.c3-axis-y text {
+   fill: white;
+   font-size:12px;
+}
+.c3-axis-x text {
+    font-size:12px;
+    fill:white;
+}
+
+.c3-legend-item {
+    font-size: 12px;
+    fill: white;
+}        

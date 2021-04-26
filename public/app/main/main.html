@@ -1,0 +1,67 @@
+<div class="row" style="height:100%;">
+
+    <div class="col-xs-2 nav-bar">
+        <!-- required for floating -->
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs tabs-left">
+            <li class="active"><a href="#MonitorMng" data-toggle="tab">모니터링보드</a></li>
+            <li><a href="#userMng" data-toggle="tab">사용자관리</a></li>
+            <li><a href="#systemMng" data-toggle="tab">시스템관리</a></li>
+
+
+        </ul>
+    </div>
+
+    <div class="col-xs-10">
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <!-- 화면설정 -->
+            <div class="tab-pane active" id="MonitorMng">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div id="MonitorGrid"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- 사용자 관리 -->
+            <div class="tab-pane" id="userMng">
+                <div class="row">
+                    <!-- <button id="btnCreateUser" type="button"  data-toggle="modal" data-target="#userModal"
+                                class="btn btn-primary btn-lg">사용자생성</button>
+                                <div style="float: right;">
+                                    <input type="text" name="" id="btn_search_user">
+                                    <button id="btnSearch_total" type="button" class="btn btn-primary btn-lg">검색</button>
+                                </div> -->
+
+
+
+                    <div class="col-xs-2">
+                        <button id="btnCreateUser" type="button" data-toggle="modal" data-target="#userModal"
+                            class="btn btn-primary btn-lg">사용자생성</button>
+                    </div>
+
+                    <div class="col-xs-offset-8 col-xs-2">
+                        <input type="text" name="" id="btn_search_user">
+                        <button id="btnSearch_total" type="button" class="btn btn-primary btn-lg">검색</button>
+                    </div>
+
+
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div id="userGrid"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- 시스템 설정 -->
+            <div class="tab-pane" id="systemMng">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div id="systemGrid"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

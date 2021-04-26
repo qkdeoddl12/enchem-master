@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="vendor/bootstrap-3.3.2-dist/css/bootstrap.css" rel="stylesheet">
+    <link href="vendor/bootstrap-3.3.2-dist/css/bootstrap-theme.css" rel="stylesheet">
+    <link href="vendor/jsgrid-1.5.3/jsgrid-theme.css" rel="stylesheet">
+    <link href="vendor/jsgrid-1.5.3/jsgrid.css" rel="stylesheet">
+    <link href="vendor/c3-master/c3.css" rel="stylesheet">
+    <link href="vendor/bootstrap-vertical-tabs-master/src/tabs.css" rel="stylesheet">
+    <link href="vendor/bootstrap-datepicker-master/dist/css/bootstrap-datepicker.css" rel="stylesheet">
+    <link href="css/public.css" rel="stylesheet">
+    <link href="css/index.css" rel="stylesheet">
+
+    <title>G-EMB Manager
+    </title>
+</head>
+
+<body class="background-color" style="height: 100%;">
+<div class="container" id="login-div">
+    <div class="row">
+        <div class="col-lg-3 col-md-2"></div>
+        <div class="col-lg-6 col-md-8 login-box">
+            <div class="col-lg-12 login-key">
+                <i class="fa fa-key" aria-hidden="true"></i>
+            </div>
+            <div class="col-lg-12 login-title">
+                G-EMB
+            </div>
+
+            <div class="col-lg-12 login-form">
+                <div class="col-lg-12 login-form">
+                    <form>
+                        <div class="form-group">
+                            <label class="form-control-label">USERNAME</label>
+                            <input type="text" class="form-control" id="txtID">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-control-label">PASSWORD</label>
+                            <input type="password" class="form-control" id="txtPW">
+                        </div>
+
+                        <div class="col-lg-12 loginbttm">
+                            <div class="col-lg-6 login-btm login-text">
+                                <!-- Error Message -->
+                            </div>
+                            <div class="col-lg-6 login-btm login-button">
+                                <button type="button" class="btn btn-outline-primary" id="btnLogin">LOGIN</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-2"></div>
+        </div>
+    </div>
+</div>
+    
+
+
+
+    <!-- 메인 관리자 화면 -->
+    <div class="container-fluid" style="height:100%;display: none;background-color: #345365;" id="main-div">
+        <div class="row" style="height:100%;overflow:auto">
+
+            <div class="col-xs-2 nav-bar">
+                <!-- required for floating -->
+                <!-- Nav tabs -->
+                <button type="button" class="btn btn-primary" id="btnLogout">로그아웃</button>
+                <ul class="nav nav-tabs tabs-left">
+                    <li class="active"><a href="#MonitorMng" data-toggle="tab">모니터링보드</a></li>
+                    <li><a href="#userMng" data-toggle="tab">사용자관리</a></li>
+                    <li><a href="#systemMng" data-toggle="tab">시스템관리</a></li>
+                    <li><a href="#historyMng" data-toggle="tab">이력조회</a></li>
+                    
+                
+                </ul>
+            </div>
+            
+            <div class="col-xs-10">
+                <!-- Tab panes -->
+                <div class="tab-content">
+                    <!-- 화면설정 -->
+                    <div class="tab-pane active" id="MonitorMng">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div id="MonitorGrid"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 사용자 관리 -->
+                    <div class="tab-pane" id="userMng">
+                        <div class="row">
+                            <!-- <button id="btnCreateUser" type="button"  data-toggle="modal" data-target="#userModal"
+                                class="btn btn-primary btn-lg">사용자생성</button>
+                                <div style="float: right;">
+                                    <input type="text" name="" id="btn_search_user">
+                                    <button id="btnSearch_total" type="button" class="btn btn-primary btn-lg">검색</button>
+                                </div> -->
+
+
+
+                                <div class="col-xs-2">
+                                    <button id="btnCreateUser" type="button" data-toggle="modal" data-target="#userModal"
+                                        class="btn btn-primary btn-lg">사용자생성</button>
+                                </div>
+                                
+                                <div class="col-xs-offset-8 col-xs-2">
+                                    <input type="text" name="" id="btn_search_user">
+                                    <button id="btnSearch_total" type="button" class="btn btn-primary btn-lg">검색</button>
+                                </div>
+                               
+
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div id="userGrid"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 시스템 설정 -->
+                    <div class="tab-pane" id="systemMng">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div id="systemGrid"></div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- 이력 조회 -->
+                    <div class="tab-pane" id="historyMng">
+                        <div class="row">
+                            <form role="form" class="form-inline">
+                                <div class="form-group">
+                                    <label for="dateStart">일자</label>
+                                    <input type="text" name="input" id="dateStart" /> ~
+                                    <input type="text" name="input" id="dateEnd" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="txtStatus">상태</label>
+                                    <select name="" id="txtStatus">
+                                        <option value="">전체</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="txtLoss">불량Y/N</label>
+                                    <select name="" id="txtLoss">
+                                        <option value="">전체</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="inputPasswordCheck">검색</label>
+                                    <input type="text" class="form-control" id="txtSearch_His">
+                                </div>
+                                <button type="button" class="btn btn-primary" id="btnHistory">검색</button>
+                                <button type="button" class="btn btn-primary" id="btnExcelDown">ExcelDown</button>
+                            </form>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div id="historyGrid"></div>
+                                <div id="statsGrid"></div>
+                            </div>
+                        </div>
+                    </div>
+    
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+        <div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-labelledby="userModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="userModalLabel">사용자 정보</h4>
+                    </div>
+                    <div class="modal-body">
+                                    
+                                <div class="row">
+                                    <div class="col-sm-6 col-md-offset-3">
+                                        <form role="form">
+                                            <div class="form-group has-error has-feedback">
+                                                <label for="inputID">아이디</label>
+                                                <input type="text" class="form-control" id="inputID" placeholder="아이디을 입력해 주세요" aria-describedby="inputSuccess2Status">
+                                                <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+                                                <span id="inputGroupSuccess4Status" class="sr-only">(error)</span>
+                                                <span id="txtcheckMsg"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="InputName">이름</label>
+                                                <input type="text" class="form-control" id="InputName" placeholder="이름를 입력해주세요">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="inputPassword">비밀번호</label>
+                                                <input type="password" class="form-control" id="inputPassword" placeholder="비밀번호를 입력해주세요" maxlength="16">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="inputPasswordCheck">비밀번호 확인</label>
+                                                <input type="password" class="form-control" id="inputPasswordCheck" placeholder="비밀번호 확인을 위해 다시한번 입력 해 주세요" maxlength="16">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="inputMobile">휴대폰 번호</label>
+                                                <input type="tel" class="form-control" id="inputMobile" placeholder="휴대폰번호를 입력해 주세요">
+                                            </div>
+                                          
+
+
+
+                                            <div class="form-group text-center">
+                                                <button id="join-submit" class="btn btn-primary" style="display: none;">
+                                                    완료<i class="fa fa-check spaceLeft"></i>
+                                                </button>
+                                                <button id="edit-submit" class="btn btn-primary" style="display: none;">
+                                                    수정완료<i class="fa fa-check spaceLeft"></i>
+                                                </button>
+                                                <button class="btn btn-warning" data-dismiss="modal">
+                                                    취소<i class="fa fa-times spaceLeft"></i>
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+  
+                    </div>
+                    <div class="modal-footer">
+                        <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Save changes</button> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <div class="modal fade" id="systemModal" tabindex="-1" role="dialog" aria-labelledby="systemModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content" style="width: 660px;">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="systemModalLabel">사용자 정보</h4>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" value="" id="user-id">
+                        <div class="container" id='inputBoardList'>
+                        
+                        
+                        </div>
+                       
+        
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+                        <button type="button" class="btn btn-primary" id="btnSystemSave">저장</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+
+
+
+    <script src="vendor/jquery-3.5.1.js"></script>
+    <script src="vendor/bootstrap-3.3.2-dist/js/bootstrap.js"></script>
+    <script src="vendor/jsgrid-1.5.3/jsgrid.js"></script>
+    <script src="vendor/c3-master/c3.js"></script>
+    <script src="vendor/Crypto/vendor/aes.js"></script>
+    <script src="vendor/Crypto/vendor/aes-ctr.js"></script>
+    <script src="vendor/Crypto/vendor/base64.js"></script>
+    <script src="vendor/Crypto/vendor/utf8.js"></script>
+    <script src="vendor/Crypto/Crypto.js"></script>
+    <script src="vendor/bootstrap-datepicker-master/dist/js/bootstrap-datepicker.js"></script>
+    
+    <script src="js/configData.js"></script>
+
+    <script src="js/index.js"></script>
+</body>
+
+</html>

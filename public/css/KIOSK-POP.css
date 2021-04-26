@@ -1,0 +1,143 @@
+.align-left { text-align: left; } 
+.align-center { text-align: center; } 
+.align-right { text-align: right; } 
+.align-justify { text-align: justify; }
+
+.background-color {
+background-color: #345365;	
+}
+
+.fmb-font-color{
+    color: white;
+}
+
+html, body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
+
+.dashboard-header {
+      border-style: outset;
+      background-color:  #223635	;
+}
+
+
+.margin-left{
+    margin-left: 30px !important;
+}
+
+.margin-bottom{
+    margin-bottom: 9px !important;
+}
+.margin-top{
+    margin-top: 0px !important;
+}
+
+
+.btn-search-size{
+    width: 177px;
+    height: 64px;
+    font-size: 26px;
+}
+
+#dataGrid .jsgrid-header-row .jsgrid-header-cell{
+width:30px;
+background-color:#294855;
+color:white;
+font-size: 20px;
+}
+
+#dataGrid .jsgrid-grid-body .jsgrid-cell{
+width:30px;
+background-color:#264050	;
+color:white;
+font-size: 20px;
+}
+
+#dataGrid .jsgrid-header-row{
+    border-bottom: solid #276890	;
+}
+
+.active-button{
+    background: #83B5E1;
+}
+.active-button-date{
+    background: #83B5E1;
+}
+
+
+.active-button:focus{
+    background: #83B5E1;
+}
+
+.active-button-date:focus{
+    background: #83B5E1;
+}
+
+.btn-oper-size{
+    width: 120px;
+    height: 80px;
+    font-size: 40px;
+}
+
+#txtBarcode{
+    font-size: 35px;
+    height: 64px;
+}
+
+#btnSearch_txt{
+    font-size: 30px;
+}
+
+.btn-grid-size{
+    width: 124px;
+    font-size: 26px;
+}
+
+.msg-text{
+    color: white;
+    margin-top: 7px;
+}
+
+#dataGrid .jsgrid-header-row .jsgrid-header-cell {
+    height: 10px;
+    font-size: 22px;
+}
+
+
+
+#dataGrid .jsgrid-grid-body .jsgrid-cell {
+ 
+    font-size: 22px;
+}
+
+
+.jsgrid-table tbody tr:nth-child(1) > .jsgrid-cell{
+   background-color: #83B5E1 !important; 
+}
+
+
+
+#workModal  form  button{
+    width: 97px;
+    height: 64px;
+    font-size: 28px;
+}
+
+.modal-footer  button{
+    width: 70px;
+    height: 64px;
+    font-size: 24px;
+}
+
+#workModal  form  input{
+    width: 288px;
+    height: 64px;
+    font-size: 28px;
+    text-align: right;
+}
+
+/* .jsgrid-table tbody{
+    overflow-y: auto

@@ -1,0 +1,14 @@
+{
+    "apps" : [
+        {
+            "name"              : "main",
+            "script"            : "plc-server.js",
+            "log_date_format"   : "YYYY-MM-DD HH:mm:ss"
+        },
+        {
+            "name"              : "board",
+            "script"            : "board_server.js",
+            "log_date_format"   : "YYYY-MM-DD HH:mm:ss"
+        }
+    ]
+}
