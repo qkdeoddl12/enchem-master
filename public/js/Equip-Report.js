@@ -1,115 +1,5 @@
 $(function(){
-     var clients1 = [
-        { "Index":'1(1차)',"workTime": "00:00:00", "realTime": "00:00:00"},
-        { "Index":'2(1차)',"workTime": "00:00:00", "realTime": "00:00:00"},
-        { "Index":'3(1차)',"workTime": "00:00:00", "realTime": "00:00:00"}
-    ];
-
-    var clients2 = [
-        { "Index":'4(2차)',"workTime": "00:00:00", "realTime": "00:00:00"},
-        { "Index":'5(2차)',"workTime": "00:00:00", "realTime": "00:00:00"}
-    ];
-
-    
-
- 
-   
-   /*  $("#wash_Grid_1").jsGrid({
-        width: "100%",
-       
-        height: "auto",
- 
-        
-        
-        sorting: true,
-        paging: true,
- 
-        data: clients1,
- 
-        fields: [
-            { title: "No", name: "Index", type: "text", width: 30, align: "center" },
-            { title: "가동시간", type: "text", width: 50 , name: "workTime", align: "center"  },
-            { title: "실가동시간", type: "text", width: 180 , name: "realTime", align: "center"  },
-            { title: "가동율 인당", type: "text", name: "", align: "center"  }
-        ]
-    }); */
-
-     /* $("#wash_Grid_2").jsGrid({
-        width: "100%",
-        height: "auto",
- 
-        
-        
-        sorting: true,
-        paging: true,
-        pageSize: 5,
-      
- 
-        data: clients2,
- 
-        fields: [
-            { title: "No", name: "Index", type: "text", width: 30, align: "center" },
-            { title: "가동시간", type: "text", width: 50 , name: "workTime", align: "center"  },
-            { title: "실가동시간", type: "text", width: 180 , name: "realTime", align: "center"  },
-            { title: "가동율 인당", type: "text", name: "", align: "center"  }
-        ]
-    }); */
-/* 
-    $("#wash_Grid_3").jsGrid({
-        width: "100%",
-        height: "auto",
- 
-        
-        
-        sorting: true,
-        paging: true,
-        pageSize: 5,
-      
- 
-        data: clients1,
- 
-        fields: [
-            { title: "No", name: "Index", type: "text", width: 30, align: "center" },
-            { title: "가동시간", type: "text", width: 50 , name: "workTime", align: "center"  },
-            { title: "실가동시간", type: "text", width: 180 , name: "realTime", align: "center"  },
-            { title: "가동율 인당", type: "text", name: "", align: "center"  }
-        ]
-    }); */
-
-   /*  $("#wash_Grid_4").jsGrid({
-        width: "100%",
-        height: "auto",
- 
-        
-        
-        sorting: true,
-        paging: true,
-        pageSize: 5,
-      
- 
-        data: clients2,
- 
-        fields: [
-            { title: "No", name: "Index", type: "text", width: 30, align: "center" },
-            { title: "가동시간", type: "text", width: 50 , name: "workTime", align: "center"  },
-            { title: "실가동시간", type: "text", width: 180 , name: "realTime", align: "center"  },
-            { title: "가동율 인당", type: "text", name: "", align: "center"  }
-        ]
-    }); */
-
-
-
-    // var chart1 = c3.generate({
-    //     bindto: '#chart1',
-    //     data: {
-    //         x:'date',
-    //         columns: [
-    //             ['date','2/1','2/2'],
-    //             ['전주', 30,50]
-    //         ],
-    //     }
-    
-    // });
+     
 
     var chart1 = c3.generate({
         bindto: '#chart1',
@@ -117,7 +7,7 @@ $(function(){
             x:'date',
             columns: [
 			['date', '2021-03-01', '2021-03-02', '2021-03-03', '2021-03-04', '2021-03-05', '2021-03-05']
-			,['생산량', 1233, 243, 364, 675, 736,465]
+			,['생산량', 1233, 243, 364, 675, 736,465],['생산량1', 113, 243, 364, 675, 736,465]
 		]
         }
         ,axis : {
@@ -150,6 +40,155 @@ var chart2 = c3.generate({
         }
     
     });
+    var chart_prod = c3.generate({
+                bindto: '#chart_prod',
+                size: {
+                    height: 250
+                },
+                bar: {
+                    width: 40
+                },
+                padding: {
+                    left: 60
+                },
+                color: {
+                    pattern: ['#49D6DE', '#DEC849']
+                },
+                data: {
+                    x: 'x',
+                    columns:
+                        [
+                      ['x', '전일', '금일'],
+                      ['생산량', 300, 400]
+                      ],
+
+                    type: 'bar'
+                   ,
+                    color: function(inColor, data) {
+                        var colors = ['#49D6DE', '#DEC849'];
+                        if(data.index !== undefined) {
+                            return colors[data.index];
+                        }
+
+                        return inColor;
+                    }
+                },
+                axis: {
+                    rotated: false,
+                    x: {
+                        type: 'category'
+                    },
+                    y: {
+                      show: false
+                    }
+                },
+                legend: {
+                    show: false
+                }
+            });
+
+
+
+
+            var chart_wash_oper = c3.generate({
+                bindto: '#chart_wash_oper',
+                size: {
+                    height: 250
+                },
+                bar: {
+                    width: 40
+                },
+                padding: {
+                    left: 60
+                },
+                color: {
+                    pattern: ['#FABF62', '#ACB6DD']
+                },
+                data: {
+                    x: 'x',
+                    columns:
+                        [
+                      ['x', '전일', '금일'],
+                      ['Min', 300, 400]
+                      ],
+
+                    type: 'bar'
+                   ,
+                    color: function(inColor, data) {
+                        var colors = ['#49D6DE', '#DEC849'];
+                        if(data.index !== undefined) {
+                            return colors[data.index];
+                        }
+
+                        return inColor;
+                    }
+                },
+                axis: {
+                    rotated: false,
+                    x: {
+                        type: 'category'
+                    },
+                    y: {
+                      show: false
+                    }
+                },
+                legend: {
+                    show: false
+                }
+            });
+
+
+             var chart_wash_loss = c3.generate({
+                bindto: '#chart_wash_loss',
+                size: {
+                    height: 250
+                },
+                bar: {
+                    width: 40
+                },
+                padding: {
+                    left: 60
+                },
+                color: {
+                    pattern: ['#49D6DE', '#DEC849']
+                },
+                data: {
+                    x: 'x',
+                    columns:
+                        [
+                      ['x', '전일', '금일'],
+                      ['불량수량', 300, 400]
+                      ],
+
+                    type: 'bar'
+                   ,
+                    color: function(inColor, data) {
+                        var colors = ['#49D6DE', '#DEC849'];
+                        if(data.index !== undefined) {
+                            return colors[data.index];
+                        }
+
+                        return inColor;
+                    }
+                },
+                axis: {
+                    rotated: false,
+                    x: {
+                        type: 'category'
+                    },
+                    y: {
+                      show: false
+                    }
+                },
+                legend: {
+                    show: false
+                }
+            });
+
+
+
+
+      
 
 
     getDataData()
@@ -249,12 +288,12 @@ var chart2 = c3.generate({
 
 
          $.ajax({
-            url: BOARD_IP+"/getDailyEquipdata",
+            url: BOARD_IP+"/getMonthlyEquipdata",
             type: "POST",
             dataType: "JSON",
             success: function (data) {
 
-               console.log('getDailyEquipdata',data)
+               console.log('getMonthlyEquipdata',data)
 
                let equip_data=data.equip[0], man=data.man[0][0].day_worker,summary=data.summary[0]
                

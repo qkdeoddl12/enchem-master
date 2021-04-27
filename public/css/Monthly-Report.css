@@ -157,3 +157,16 @@ svg.radial-progress text {
     font-size: 12px;
     fill: white;
 }        
+
+
+.padding-right{
+    padding-right: 25px;
+}
+
+.padding-top-equip{
+    padding-top: 20px;
+}
+
+.padding-bottom-equip{
+    padding-bottom: 20px;
+}

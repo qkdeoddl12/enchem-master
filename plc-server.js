@@ -936,7 +936,7 @@ app.post('/downHistory', function (request, response) {
          
         })
 
-        wb.write(`이력조회_${startDate} ~ ${endDate}_${now()}.xlsx`, response);
+        wb.write(`이력조회_${startDate} ~ ${endDate}.xlsx`, response);
 
 
 
@@ -957,7 +957,7 @@ function selectHistory_excel(conn,startDate,endDate,status,loss,text,callback){
 
 
 
-    var extQuery = `select IDX_LOG,BARCODE,STATUS,IN_TIME,OUT_TIME,LOSS,LOSS_CNT,LOSS_CNT,CREATETIME,CREATETIME_LOG,day_worker,night_worker from drum_data_log d
+    var extQuery = `select IDX_LOG,BARCODE,STATUS,IN_TIME,OUT_TIME,LOSS,LOSS_CNT,LOSS_CNT,CREATETIME,CREATETIME_LOG,ifnull(day_worker,0) as day_worker,ifnull(night_worker,0) as night_worker  from drum_data_log d
     LEFT JOIN tbl_worker_info w
     ON date(CREATETIME)=date(work_date)
      where 1=1` 

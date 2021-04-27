@@ -195,3 +195,12 @@ svg.radial-progress text {
     font-size: 12px;
     fill: white;
 }        
+
+
+.margin-top-equip{
+    margin-top: 50px;
+}
+
+#txtProd_day2,#txtWashOper_day2,#txtWashLoss_day2{
+    color: aqua !important;
+}

@@ -84,8 +84,8 @@ $(function(){
                     $(".complete").css('stroke-dashoffset','220px')
                 }
 
-                $("#day2_cnt").text(`${day2_cnt} / 0   ${day2_cnt}`)
-                $("#day1_cnt").text(`${day1_cnt} / 0   ${day1_cnt}`)
+                $("#day2_cnt").html(`${day2_cnt} / 0   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 총 생산량 : ${day2_cnt}`)
+                $("#day1_cnt").html(`${day1_cnt} / 0   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 총 생산량 : ${day1_cnt}`)
 
                 $("#2ndCln_out").text(day1_cnt)
                 $("#2ndCln_loss").text(day1_loss)

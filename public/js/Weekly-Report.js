@@ -89,7 +89,10 @@ $(function(){
 
                 $("#2ndCln_out").text(day1_cnt)
                 $("#2ndCln_loss").text(day1_loss)
-                $("#2ndCln_loss_per").text( Math.round(day1_loss/day1_cnt*100)+'%' )
+                if(day1_loss!=0&&day1_cnt!=0){
+                    $("#2ndCln_loss_per").text( Math.round(day1_loss/day1_cnt*100)+'%' )
+                }
+                
                 $("#UPH_val").text(Math.round(day1_cnt/8).toFixed(1) )
                 /* 
                 svg.radial-progress circle {

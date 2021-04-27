@@ -311,7 +311,7 @@ app.post('/getDailyEquipdata', function (request, response) {
 function selectDailydata_diff(conn,callback){
     let day_Query = `SELECT DATE(OUT_TIME) AS OUT_TIME,sum(if(LOSS='F',1,0)) AS cnt,sum(if(LOSS='T',1,0)) AS loss
     FROM drum_data_log
-    WHERE DATE(OUT_TIME) BETWEEN DATE_SUB(CURDATE(),INTERVAL 1 DAY) AND CURDATE()  AND (STATUS='O' AND STATUS!='D' )
+    WHERE DATE(OUT_TIME) BETWEEN DATE_SUB('2021-04-23',INTERVAL 1 DAY) AND '2021-04-23'  AND (STATUS='O' AND STATUS!='D' )
     GROUP BY DATE(OUT_TIME)
     ORDER BY DATE(OUT_TIME) DESC` 
 
@@ -484,7 +484,7 @@ function selectMonthlydata_diff(conn,callback){
 function selectDailydata_plc(conn,callback){
   
     let plc_Query = `SELECT unit_id,max(prod_cnt) AS cnt FROM plc_log
-    WHERE DATE(CONCAT('20',createTime))=curdate() GROUP BY unit_id order by unit_id asc` 
+    WHERE DATE(CONCAT('20',createTime))='2021-04-23' GROUP BY unit_id order by unit_id asc` 
     
     //console.log(plc_Query)
 
