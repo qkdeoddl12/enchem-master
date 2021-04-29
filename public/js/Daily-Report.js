@@ -55,11 +55,17 @@ $(function(){
         getDataData()
     },10000)
 
+        setInterval(function () {
+        $("#txtCurrentDateTime").text(now)
+        
+    },1000)
+
+
 
 
     function getDataData(){
         $.ajax({
-            url: "http://127.0.0.1:3050/getDaydata",
+            url: BOARD_IP+"/getDaydata",
             type: "POST",
             dataType: "JSON",
             success: function (data) {
@@ -122,7 +128,7 @@ $(function(){
 
 
         $.ajax({
-            url: "http://127.0.0.1:3050/getDayPlcdata",
+            url: BOARD_IP+"/getDayPlcdata",
             type: "POST",
             dataType: "JSON",
             success: function (data) {
@@ -143,6 +149,27 @@ $(function(){
 
             }
         });
+
+
+        $.ajax({
+            url: BOARD_IP+"/getDailyDate",
+            type: "POST",
+            dataType: "JSON",
+            success: function (data) {
+
+               console.log('getDailyDate',data.data[0].date_data)
+               $("#txtCurrentDate").text(data.data[0].date_data)
+               $("#txtDailyWorkMan").text(`주간 : ${data.data[0].day_worker}명 야간 : ${data.data[0].night_worker}명`)
+             
+               
+               
+            },
+            error:function (error) {
+
+            }
+        });
+
+         
     }
 
 

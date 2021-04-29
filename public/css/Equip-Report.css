@@ -44,7 +44,7 @@ html, body {
 
 #wash_Grid_1,#wash_Grid_2,#wash_Grid_3,#wash_Grid_4{
     width: 100%;
-    height: 200px;
+    height: 140px;
     align-content: center;
     border: white;
     color: white;
@@ -203,4 +203,13 @@ svg.radial-progress text {
 
 #txtProd_day2,#txtWashOper_day2,#txtWashLoss_day2{
     color: aqua !important;
+}
+
+.right_bottom{
+    margin-top: 40px;
+}
+
+.plc-status-img{
+    height: 27px;
+    margin-bottom: 5px;
 }

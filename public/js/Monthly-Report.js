@@ -55,6 +55,11 @@ $(function(){
         getDataData()
     },10000)
 
+     setInterval(function () {
+        $("#txtCurrentDateTime").text(now)
+        
+    },1000)
+
 
 
     function getDataData(){
@@ -139,6 +144,24 @@ $(function(){
 
                 $("#plc_total1").text(data.data[0].cnt+data.data[1].cnt+data.data[2].cnt)
                 $("#plc_total2").text(data.data[3].cnt+data.data[4].cnt)
+               
+               
+            },
+            error:function (error) {
+
+            }
+        });
+
+
+        $.ajax({
+            url: BOARD_IP+"/getMonthlyDate",
+            type: "POST",
+            dataType: "JSON",
+            success: function (data) {
+
+               console.log('getDailyDate',data.data[0].date_data)
+               $("#txtCurrentDate").text(data.data[0].startDate+data.data[0].endDate)
+             
                
                
             },

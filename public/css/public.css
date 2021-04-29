@@ -11,3 +11,9 @@
 .margin-bottom{
     margin-bottom: 20px;
 }
+
+.top-watch{
+    float: right;
+    padding-right: 27px;
+    font-size: 27px;
+}

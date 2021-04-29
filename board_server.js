@@ -183,6 +183,86 @@ app.post('/getMonthlydata', function (request, response) {
 
 });
 
+//일일 금일 날짜
+app.post('/getDailyDate', function (request, response) {
+    
+
+    async.waterfall(
+    [
+        callback => {
+        // 첫번째 함수 수행
+        selectCurrentDate_Daily(con,function(ret){
+                
+                 callback(null,ret);
+            })  
+        }
+    ],
+    (err, result) => {
+        // 결과 함수 수행
+        if (err) {
+        console.error(err);
+        }
+        //console.log('getDaydata',result)
+       return  response.send(result)
+    }
+    );
+
+});
+
+
+//금주 날짜
+app.post('/getWeeklyDate', function (request, response) {
+    
+
+    async.waterfall(
+    [
+        callback => {
+        // 첫번째 함수 수행
+        selectCurrentDate_Weekly(con,function(ret){
+                
+                 callback(null,ret);
+            })  
+        }
+    ],
+    (err, result) => {
+        // 결과 함수 수행
+        if (err) {
+        console.error(err);
+        }
+        //console.log('getDaydata',result)
+       return  response.send(result)
+    }
+    );
+
+});
+
+
+//금월 날짜
+app.post('/getMonthlyDate', function (request, response) {
+    
+
+    async.waterfall(
+    [
+        callback => {
+        // 첫번째 함수 수행
+        selectCurrentDate_Monthly(con,function(ret){
+                
+                 callback(null,ret);
+            })  
+        }
+    ],
+    (err, result) => {
+        // 결과 함수 수행
+        if (err) {
+        console.error(err);
+        }
+        //console.log('getDaydata',result)
+       return  response.send(result)
+    }
+    );
+
+});
+
 //월간 PLC 데이터
 app.post('/getMonthlyPlcdata', function (request, response) {
 
@@ -213,57 +293,10 @@ app.post('/getMonthlyPlcdata', function (request, response) {
 
 
 
-//설비별 가동데이터_월별
-app.post('/getMonthlyEquipdata', function (request, response) {
+// 종합현황 - 설비별 현황
+app.post('/getDailyEquipdata', function (request, response) {//selectCheckPLCCon
     
-      let equip_data=[],man_data=[],summary_data=[];
-
-    async.waterfall(
-    [
-        callback => {
-        // 첫번째 함수 수행
-        selectMonthlydata_equip(con,function(ret){
-                
-                 callback(null,equip_data.push(ret.data));
-            })  
-        },
-        (arg1, callback) => {
-        // 두번째 함수 수행
-
-        selectMonthlydata_man(con,function(ret){
-            
-            callback(null,man_data.push(ret.data));
-        })
-        
-        },
-        (arg1, callback) => {
-        // 두번째 함수 수행
-
-        selectMonthlydata_summary(con,function(ret){
-            
-            callback(summary_data.push(ret.data));
-        })
-        
-        }
-    ],
-    (err, result) => {
-        // 결과 함수 수행
-        if (err) {
-        console.error(err);
-        }
-        //console.log('getDayPlcdata',equip_data,man_data)
-       return  response.json({equip:equip_data,man:man_data,summary:summary_data})
-    }
-    );
-
-});
-
-
-
-//설비별 가동데이터_일별
-app.post('/getDailyEquipdata', function (request, response) {
-    
-      let equip_data=[],man_data=[],summary_data=[];
+      let equip_data=[],man_data=[],Daily_trend_data=[],PLC_data=[];
 
     async.waterfall(
     [
@@ -286,9 +319,20 @@ app.post('/getDailyEquipdata', function (request, response) {
         (arg1, callback) => {
         // 두번째 함수 수행
 
-        selectDailydata_summary(con,function(ret){
+        selectDailyPLC_trend(con,function(ret){
+            console.log('ret',ret.data)
             
-            callback(summary_data.push(ret.data));
+            callback(null,Daily_trend_data.push(ret.data));
+        })
+        
+        },
+        (arg1, callback) => {
+        // 두번째 함수 수행
+
+        selectCheckPLCCon(con,function(ret){
+            console.log('ret',ret.data)
+            
+            callback(PLC_data.push(ret.data));
         })
         
         }
@@ -296,10 +340,78 @@ app.post('/getDailyEquipdata', function (request, response) {
     (err, result) => {
         // 결과 함수 수행
         if (err) {
-        console.error(err);
+        console.error('error',err);
         }
         //console.log('getDayPlcdata',equip_data,man_data)
-       return  response.json({equip:equip_data,man:man_data,summary:summary_data})
+       return  response.json({equip:equip_data,man:man_data,daily_trend:Daily_trend_data,plc:PLC_data})
+    }
+    );
+
+});
+
+
+
+// 종합현황 - 일일 종합현황
+app.post('/getDailyTotaldata', function (request, response) {
+    
+      let washTime_data=[],worker_data=[],loss_data=[],workProd_data=[],total_data=[];
+
+    async.waterfall(
+    [
+        callback => {
+        // 첫번째 함수 수행
+        selectData_washTime(con,function(ret){
+                
+                 callback(null,washTime_data.push(ret.data));
+            })  
+        },
+        (arg1, callback) => {
+        // 두번째 함수 수행
+
+        selectData_worker(con,function(ret){
+            
+            callback(null,worker_data.push(ret.data));
+        })
+        
+        },
+        (arg1, callback) => {
+        // 두번째 함수 수행
+
+            selectData_lossData(con,function(ret){
+                console.log('ret',ret.data)
+                
+                callback(null,loss_data.push(ret.data));
+            })
+        
+        },
+        (arg1, callback) => {
+        // 두번째 함수 수행
+
+            selectData_workProd(con,function(ret){
+                console.log('ret',ret.data)
+                
+                callback(null,workProd_data.push(ret.data));
+            })
+        
+        },
+        (arg1, callback) => {
+        // 두번째 함수 수행
+
+            selectData_prodTotal(con,function(ret){
+                console.log('ret',ret.data)
+                
+                callback(total_data.push(ret.data));
+            })
+        
+        }
+    ],
+    (err, result) => {
+        // 결과 함수 수행
+        if (err) {
+        console.error('error',err,result);
+        }
+        //console.log('getDayPlcdata',equip_data,man_data)
+       return  response.json({washTime:washTime_data,worker:worker_data,loss:loss_data,workProd:workProd_data,total:total_data})
     }
     );
 
@@ -515,8 +627,13 @@ function selectDailydata_plc(conn,callback){
 //주간 PLC 데이터
 function selectWeeklydata_plc(conn,callback){
   
-    let plc_Query = `SELECT unit_id,max(prod_cnt) AS cnt FROM plc_log
-    WHERE DATE(CONCAT('20',createTime)) BETWEEN DATE_SUB(CURDATE(),INTERVAL 1 week) AND CURDATE() GROUP BY unit_id order by unit_id asc` 
+    let plc_Query = `      SELECT unit_id,SUM(cnt) AS cnt FROM 
+        (SELECT DATE(CONCAT('20',createTime)),unit_id,max(prod_cnt) AS cnt FROM plc_log
+    WHERE DATE(CONCAT('20',createTime)) BETWEEN
+        (SELECT ADDDATE(CURDATE(), - WEEKDAY(CURDATE()) + 0 ))
+    AND
+        (SELECT ADDDATE(CURDATE(), - WEEKDAY(CURDATE()) + 6 )) AND CURDATE() GROUP BY DATE(CONCAT('20',createTime)),unit_id order by unit_id ASC) prod
+        GROUP BY  unit_id` 
     
     //console.log(plc_Query)
 
@@ -546,8 +663,11 @@ function selectWeeklydata_plc(conn,callback){
 //월별 PLC 데이터
 function selectMonthlydata_plc(conn,callback){
   
-    let plc_Query = `    SELECT unit_id,max(prod_cnt) AS cnt FROM plc_log 
-    WHERE DATE_FORMAT(DATE(CONCAT('20',createTime)),'%Y-%m')=DATE_FORMAT(curdate(),'%Y-%m')  GROUP BY unit_id order by unit_id asc` 
+    let plc_Query = `       SELECT unit_id,SUM(cnt) AS cnt FROM 
+        (SELECT DATE(CONCAT('20',createTime)),unit_id,max(prod_cnt) AS cnt FROM plc_log
+    WHERE DATE_FORMAT(DATE(CONCAT('20',createTime)),'%Y-%m')=DATE_FORMAT(curdate(),'%Y-%m') AND CURDATE() GROUP BY DATE(CONCAT('20',createTime)),unit_id order by unit_id ASC) prod
+        GROUP BY  unit_id
+` 
     
     //console.log(plc_Query)
 
@@ -683,57 +803,99 @@ function selectDailydata_man(conn,callback){
 
 
 
-//설비별 가동 가동인원_월별
-function selectMonthlydata_man(conn,callback){
-  
-    let plc_Query = `     
-select sum(day_worker) as day_worker from tbl_worker_info
-where DATE_FORMAT(date(work_date),'%Y-%m')=DATE_FORMAT(curdate(),'%Y-%m') 
-` 
-    
-    //console.log(plc_Query)
-
-    conn.query(plc_Query, function (err,rows){
-        if(err){
-            console.log("MySQL Query Execution Failed....");
-            console.log(err);
-            var fail_ret={itemsCount:0,data:[],status:'FAIL'}
-            if(callback){
-                callback(fail_ret);
-            }
-            return fail_ret;
-        }
-        //console.log('rows',rows)
-    
-        var ret={itemsCount:rows.length,data:rows,status:'OK'}
-
-        if(callback){
-            callback(ret);
-        }
-        return ret;
-    });
-}
-
-
-
 //설비별 가동 가동인원_일별_ summary
-function selectDailydata_summary(conn,callback){
+function selectDailyPLC_trend(conn,callback){
+  
+    let plc_Query = `SELECT DATE(CONCAT('20',createTime)) as createTime,unit_id,max(prod_cnt) prod_cnt FROM plc_log
+where prod_cnt<>0 GROUP BY DATE(CONCAT('20',createTime)),unit_id
+order by DATE(CONCAT('20',createTime)) desc` 
+    
+    //console.log(plc_Query)
+
+    conn.query(plc_Query, function (err,rows){
+        if(err){
+            console.log("MySQL Query Execution Failed....");
+            console.log(err);
+            var fail_ret={itemsCount:0,data:[],status:'FAIL'}
+            if(callback){
+                callback(fail_ret);
+            }
+            return fail_ret;
+        }
+        //console.log('rows',rows)
+
+        rows.forEach(function(item,index,arr2){
+            //console.log('rows',formatDate(new Date(item.IN_TIME)) )
+
+
+
+         
+            if(item.createTime!==null){
+                item.createTime=formatDate2(new Date(item.createTime))
+            }
+           
+            //console.log(item)
+        })
+    
+        var ret={itemsCount:rows.length,data:rows,status:'OK'}
+
+        if(callback){
+            callback(ret);
+        }
+        return ret;
+    });
+}
+
+
+//일일 종합현황 - 세정 작업 공수
+function selectData_washTime(conn,callback){
   
     let plc_Query = `     
-SELECT '1차',DATE_FORMAT(SEC_TO_TIME(SUM(action1+action2+action3)/10/3), '%H:%i:%s') as realTime,   TIMEDIFF(DATE_FORMAT(concat('20',max(createTime)), '%Y-%m-%d %H:%i:%s'),DATE_FORMAT(concat('20',min(createTime)), '%Y-%m-%d %H:%i:%s')) as workTime   FROM 
-(SELECT createTime,unit_id,max(action1) AS action1,max(action2) AS action2,max(action3) AS action3,work_YN,prod_cnt FROM plc_log
-WHERE prod_cnt<>0 AND DATE(CONCAT('20',createTime))='2021-04-23'and unit_id in(1,2,3)
-GROUP BY unit_id,prod_cnt) m
-union
-SELECT '2차',DATE_FORMAT(SEC_TO_TIME(SUM(action1+action2+action3)/10/2), '%H:%i:%s') as realTime, TIMEDIFF(DATE_FORMAT(concat('20',max(createTime)), '%Y-%m-%d %H:%i:%s'),DATE_FORMAT(concat('20',min(createTime)), '%Y-%m-%d %H:%i:%s')) as workTime   FROM 
-(SELECT createTime,unit_id,max(action1) AS action1,max(action2) AS action2,max(action3) AS action3,work_YN,prod_cnt FROM plc_log
-WHERE prod_cnt<>0 AND DATE(CONCAT('20',createTime))='2021-04-23'and unit_id not in(1,2,3)
-GROUP BY unit_id,prod_cnt) m
+          SELECT '전일' as day,ROUND(IFNULL((sum(realTime)/60)/SUM(prod_cnt),0)) as prod_min FROM  
+        (SELECT unit_id,SEC_TO_TIME(SUM(action1+action2+action3)/10) as realTIme,max(prod_cnt) as prod_cnt
+        FROM 
+        (SELECT createTime,unit_id,max(action1) AS action1,max(action2) AS action2,max(action3) AS action3,work_YN,prod_cnt FROM plc_log
+        WHERE prod_cnt<>0 AND DATE(CONCAT('20',createTime))=DATE_ADD(CURDATE(),INTERVAL -1 day) 
+        GROUP BY unit_id,prod_cnt) m
+        GROUP BY unit_id) d
+        UNION 
+        SELECT '금일' day,ROUND(IFNULL((sum(realTime)/60)/SUM(prod_cnt),0)) as prod_min FROM 
+        (SELECT unit_id,SEC_TO_TIME(SUM(action1+action2+action3)/10) as realTIme,max(prod_cnt) as prod_cnt
+        FROM 
+        (SELECT createTime,unit_id,max(action1) AS action1,max(action2) AS action2,max(action3) AS action3,work_YN,prod_cnt FROM plc_log
+        WHERE prod_cnt<>0 AND DATE(CONCAT('20',createTime))=CURDATE() 
+        GROUP BY unit_id,prod_cnt) m
+        GROUP BY unit_id) d` 
+    
+    //console.log(plc_Query)
 
+    conn.query(plc_Query, function (err,rows){
+        if(err){
+            console.log("MySQL Query Execution Failed....");
+            console.log(err);
+            var fail_ret={itemsCount:0,data:[],status:'FAIL'}
+            if(callback){
+                callback(fail_ret);
+            }
+            return fail_ret;
+        }
+        //console.log('rows',rows)
+    
+        var ret={itemsCount:rows.length,data:rows,status:'OK'}
 
+        if(callback){
+            callback(ret);
+        }
+        return ret;
+    });
+}
 
-										
-` 
+//일일 종합현황 - 일일 투입인원
+function selectData_worker(conn,callback){
+  
+    let plc_Query = `     
+        SELECT (day_worker+night_worker) AS worker_cnt FROM tbl_worker_info
+        ORDER BY work_date DESC LIMIT 2` 
     
     //console.log(plc_Query)
 
@@ -759,24 +921,19 @@ GROUP BY unit_id,prod_cnt) m
 }
 
 
-//설비별 가동 가동인원_월별_ summary
-function selectMonthlydata_summary(conn,callback){
+//일일 종합현황 - 일일 불량수량
+function selectData_lossData(conn,callback){
   
-    let plc_Query = `     
-SELECT '1차',DATE_FORMAT(SEC_TO_TIME(SUM(action1+action2+action3)/10/3), '%H:%i:%s') as realTime,   TIMEDIFF(DATE_FORMAT(concat('20',max(createTime)), '%Y-%m-%d %H:%i:%s'),DATE_FORMAT(concat('20',min(createTime)), '%Y-%m-%d %H:%i:%s')) as workTime   FROM 
-(SELECT createTime,unit_id,max(action1) AS action1,max(action2) AS action2,max(action3) AS action3,work_YN,prod_cnt FROM plc_log
-WHERE prod_cnt<>0 AND DATE_FORMAT(DATE(CONCAT('20',createTime)),'%Y-%m')=DATE_FORMAT(curdate(),'%Y-%m') and unit_id in(1,2,3)
-GROUP BY unit_id,prod_cnt) m
-union
-SELECT '2차',DATE_FORMAT(SEC_TO_TIME(SUM(action1+action2+action3)/10/2), '%H:%i:%s') as realTime, TIMEDIFF(DATE_FORMAT(concat('20',max(createTime)), '%Y-%m-%d %H:%i:%s'),DATE_FORMAT(concat('20',min(createTime)), '%Y-%m-%d %H:%i:%s')) as workTime   FROM 
-(SELECT createTime,unit_id,max(action1) AS action1,max(action2) AS action2,max(action3) AS action3,work_YN,prod_cnt FROM plc_log
-WHERE prod_cnt<>0 AND DATE_FORMAT(DATE(CONCAT('20',createTime)),'%Y-%m')=DATE_FORMAT(curdate(),'%Y-%m') and unit_id not in(1,2,3)
-GROUP BY unit_id,prod_cnt) m
-
-
-
-										
-` 
+    let plc_Query = `       
+SELECT DAY,loss_date,loss_cnt FROM 
+(SELECT '전일' AS day,date(CREATETIME) as loss_date,SUM(if(LOSS='T',1,0)) AS loss_cnt FROM drum_data_log
+GROUP BY date(CREATETIME) 
+ORDER BY date(CREATETIME) desc LIMIT 1 OFFSET 1) d
+UNION
+SELECT DAY,loss_date,loss_cnt FROM 
+(SELECT '금일' AS day,date(CREATETIME) AS loss_date,SUM(if(LOSS='T',1,0)) AS loss_cnt FROM drum_data_log
+GROUP BY date(CREATETIME) 
+ORDER BY date(CREATETIME) desc LIMIT 1 OFFSET 0) d` 
     
     //console.log(plc_Query)
 
@@ -800,6 +957,298 @@ GROUP BY unit_id,prod_cnt) m
         return ret;
     });
 }
+
+
+
+//일일 종합현황 - 일일 인당 생산량
+function selectData_workProd(conn,callback){
+  
+    let plc_Query = `       
+SELECT DAY,prod_date,prod_cnt FROM 
+(SELECT '전일' AS day,date(CREATETIME) as prod_date,SUM(if(LOSS='F',1,0)) AS prod_cnt FROM drum_data
+WHERE LOSS='F' AND STATUS='O'
+GROUP BY date(CREATETIME) 
+ORDER BY date(CREATETIME) desc LIMIT 1 OFFSET 1) d
+UNION
+SELECT DAY,prod_date,prod_cnt FROM 
+(SELECT '금일' AS day,date(CREATETIME) AS prod_date,SUM(if(LOSS='F',1,0)) AS prod_cnt FROM drum_data
+WHERE LOSS='F' AND STATUS='O'
+GROUP BY date(CREATETIME) 
+ORDER BY date(CREATETIME) desc LIMIT 1 OFFSET 0) d` 
+    
+    //console.log(plc_Query)
+
+    conn.query(plc_Query, function (err,rows){
+        if(err){
+            console.log("MySQL Query Execution Failed....");
+            console.log(err);
+            var fail_ret={itemsCount:0,data:[],status:'FAIL'}
+            if(callback){
+                callback(fail_ret);
+            }
+            return fail_ret;
+        }
+        //console.log('rows',rows)
+    
+        var ret={itemsCount:rows.length,data:rows,status:'OK'}
+
+        if(callback){
+            callback(ret);
+        }
+        return ret;
+    });
+}
+
+
+
+//일일 종합현황 - 일일 생산수량 및 불량률
+function selectData_prodTotal(conn,callback){
+  
+    let plc_Query = `       
+SELECT loss_date,prod_cnt,round(loss_cnt/prod_cnt*100) as loss_per
+from
+(SELECT date(CREATETIME) as loss_date,SUM(if(LOSS='T',1,0)) AS loss_cnt FROM drum_data_log
+GROUP BY date(CREATETIME) 
+ORDER BY date(CREATETIME) desc LIMIT 7 ) d1
+LEFT join
+(SELECT '금일' AS day,date(CREATETIME) AS prod_date,SUM(if(LOSS='F',1,0)) AS prod_cnt FROM drum_data
+WHERE LOSS='F' AND STATUS='O'
+GROUP BY date(CREATETIME) 
+ORDER BY date(CREATETIME) desc LIMIT 7) d2
+ON d1.loss_date=d2.prod_date
+ORDER BY loss_date asc
+` 
+
+    
+    //console.log(plc_Query)
+
+    conn.query(plc_Query, function (err,rows){
+        if(err){
+            console.log("MySQL Query Execution Failed....");
+            console.log(err);
+            var fail_ret={itemsCount:0,data:[],status:'FAIL'}
+            if(callback){
+                callback(fail_ret);
+            }
+            return fail_ret;
+        }
+        //console.log('rows',rows)
+
+         rows.forEach(function(item,index,arr2){
+            //console.log('rows',formatDate(new Date(item.IN_TIME)) )
+
+            if(item.loss_date!==null){
+                item.loss_date=formatDate2(new Date(item.loss_date))
+            }
+           
+            //console.log(item)
+        })
+    
+        var ret={itemsCount:rows.length,data:rows,status:'OK'}
+
+        if(callback){
+            callback(ret);
+        }
+        return ret;
+    });
+}
+
+
+
+
+//일일 금일 날짜
+function selectCurrentDate_Daily(conn,callback){
+  
+    let plc_Query = `       
+	SELECT DATE_FORMAT(curdate(),'%m월 %d일') as date_data,day_worker,night_worker FROM tbl_worker_info
+	WHERE date(work_date)=CURDATE()
+` 
+
+    
+    //console.log(plc_Query)
+
+    conn.query(plc_Query, function (err,rows){
+        if(err){
+            console.log("MySQL Query Execution Failed....");
+            console.log(err);
+            var fail_ret={itemsCount:0,data:[],status:'FAIL'}
+            if(callback){
+                callback(fail_ret);
+            }
+            return fail_ret;
+        }
+        //console.log('rows',rows)
+
+         rows.forEach(function(item,index,arr2){
+            //console.log('rows',formatDate(new Date(item.IN_TIME)) )
+
+            // if(item.date_data!==null){
+            //     item.date_data=formatDate2(new Date(item.date_data))
+            // }
+           
+            //console.log(item)
+        })
+    
+        var ret={itemsCount:rows.length,data:rows,status:'OK'}
+
+        if(callback){
+            callback(ret);
+        }
+        return ret;
+    });
+}
+
+
+
+//금주 날짜
+function selectCurrentDate_Weekly(conn,callback){
+  
+    let plc_Query = `       
+ SELECT DATE_FORMAT(min(DATE(CREATETIME)),'%m월 %d일') AS startDate ,DATE_FORMAT(MAX(DATE(CREATETIME)),'~ %d일') AS endDate FROM drum_data
+where DATE(CREATETIME) BETWEEN
+        (SELECT ADDDATE(CURDATE(), - WEEKDAY(CURDATE()) + 0 ))
+    AND
+        (SELECT ADDDATE(CURDATE(), - WEEKDAY(CURDATE()) + 6 )) AND CURDATE()
+` 
+
+    
+    //console.log(plc_Query)
+
+    conn.query(plc_Query, function (err,rows){
+        if(err){
+            console.log("MySQL Query Execution Failed....");
+            console.log(err);
+            var fail_ret={itemsCount:0,data:[],status:'FAIL'}
+            if(callback){
+                callback(fail_ret);
+            }
+            return fail_ret;
+        }
+        //console.log('rows',rows)
+
+         rows.forEach(function(item,index,arr2){
+            //console.log('rows',formatDate(new Date(item.IN_TIME)) )
+
+            // if(item.startDate!==null){
+            //     item.startDate=formatDate2(new Date(item.datstartDatee_data))
+            // }
+
+            // if(item.endDate!==null){
+            //     item.endDate=formatDate2(new Date(item.endDate))
+            // }
+           
+            //console.log(item)
+        })
+    
+        var ret={itemsCount:rows.length,data:rows,status:'OK'}
+
+        if(callback){
+            callback(ret);
+        }
+        return ret;
+    });
+}
+
+
+//금월 날짜
+function selectCurrentDate_Monthly(conn,callback){
+  
+    let plc_Query = `       
+ SELECT DATE_FORMAT(min(DATE(CREATETIME)),'%m월 %d일') AS startDate ,DATE_FORMAT(MAX(DATE(CREATETIME)),'~ %d일') AS endDate FROM drum_data
+where DATE_FORMAT(DATE(CREATETIME),'%Y-%m')=DATE_FORMAT(curdate(),'%Y-%m')
+` 
+
+    
+    //console.log(plc_Query)
+
+    conn.query(plc_Query, function (err,rows){
+        if(err){
+            console.log("MySQL Query Execution Failed....");
+            console.log(err);
+            var fail_ret={itemsCount:0,data:[],status:'FAIL'}
+            if(callback){
+                callback(fail_ret);
+            }
+            return fail_ret;
+        }
+        //console.log('rows',rows)
+
+         rows.forEach(function(item,index,arr2){
+            //console.log('rows',formatDate(new Date(item.IN_TIME)) )
+
+           
+            // if(item.startDate!==null){
+            //     item.startDate=formatDate2(new Date(item.datstartDatee_data))
+            // }
+
+            // if(item.endDate!==null){
+            //     item.endDate=formatDate2(new Date(item.endDate))
+            // }
+            //console.log(item)
+        })
+    
+        var ret={itemsCount:rows.length,data:rows,status:'OK'}
+
+        if(callback){
+            callback(ret);
+        }
+        return ret;
+    });
+}
+
+
+//plc 상태
+function selectCheckPLCCon(conn,callback){
+  
+    let plc_Query = `       
+
+select unit_id,status FROM (SELECT startTime,unit_id,status FROM plc_log_work
+WHERE DATE(startTime)='2021-04-29'   ORDER BY startTime DESC LIMIT 10) plc
+GROUP BY unit_id
+` 
+
+    
+    //console.log(plc_Query)
+
+    conn.query(plc_Query, function (err,rows){
+        if(err){
+            console.log("MySQL Query Execution Failed....");
+            console.log(err);
+            var fail_ret={itemsCount:0,data:[],status:'FAIL'}
+            if(callback){
+                callback(fail_ret);
+            }
+            return fail_ret;
+        }
+        //console.log('rows',rows)
+
+         rows.forEach(function(item,index,arr2){
+            //console.log('rows',formatDate(new Date(item.IN_TIME)) )
+
+           
+            // if(item.startDate!==null){
+            //     item.startDate=formatDate2(new Date(item.datstartDatee_data))
+            // }
+
+            // if(item.endDate!==null){
+            //     item.endDate=formatDate2(new Date(item.endDate))
+            // }
+            //console.log(item)
+        })
+    
+        var ret={itemsCount:rows.length,data:rows,status:'OK'}
+
+        if(callback){
+            callback(ret);
+        }
+        return ret;
+    });
+}
+
+
+
+
+
 
 
 

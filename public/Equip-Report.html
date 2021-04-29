@@ -25,14 +25,14 @@
         <div class="row">
 
             <div class="col-sm-12 col-md-12 main">
-                <h1 class="dashboard-header align-center fmb-font-color" style="height: 70px;line-height: 60px;">종합 현황</h1>
+                <h1 class="dashboard-header align-center fmb-font-color" style="height: 70px;line-height: 60px;">종합 현황<span class="top-watch" id="txtCurrentDateTime"></span></h1>
             </div>
 
         </div>
         <div class="row">
             <!-- left -->
             <div class="col-md-4 padding-top-equip">
-                <h3 class="fmb-font-color align-center padding-bottom-equip margin-bottom">설비별 현황</h3>
+                <h2 class="fmb-font-color align-center padding-bottom-equip margin-bottom">설비별 현황</h2>
                 <div class="col-md-12 padding-top-equip">
                     <table id="wash_Grid_1" border="1">
                         <tr>
@@ -47,19 +47,19 @@
                        </tr><!-- 두번째 줄 끝 -->
                   <tr>
                            <td>1(1차)</td>
-                           <td id='plcData_status_1'>0</td>
+                           <td id='plcData_status_1'></td>
                            <td id='plcData_workTime_1'>00:00:00</td>
                            <td id='plcData_realTIme_1'>00:00:00</td>
                        </tr>
                         <tr>
                             <td>2(1차)</td>
-                            <td id='plcData_status_2'>0</td>
+                            <td id='plcData_status_2'></td>
                             <td id='plcData_workTime_2'>00:00:00</td>
                             <td id='plcData_realTIme_2'>00:00:00</td>
                         </tr>
                         <tr>
                             <td>3(1차)</td>
-                            <td id='plcData_status_3'>0</td>
+                            <td id='plcData_status_3'></td>
                             <td id='plcData_workTime_3'>00:00:00</td>
                             <td id='plcData_realTIme_3'>00:00:00</td>
                         </tr>
@@ -82,20 +82,20 @@
                     </tr><!-- 두번째 줄 끝 -->
                     <tr>
                         <td>4(2차)</td>
-                        <td id='plcData_status_4'>0</td>
+                        <td id='plcData_status_4'></td>
                         <td id='plcData_workTime_4'>00:00:00</td>
                         <td id='plcData_realTIme_4'>00:00:00</td>
                     </tr>
                     <tr>
                         <td>5(2차)</td>
-                        <td id='plcData_status_5'>0</td>
+                        <td id='plcData_status_5'></td>
                         <td id='plcData_workTime_5'>00:00:00</td>
                         <td id='plcData_realTIme_5'>00:00:00</td>
                     </tr>
                 </table>
           
                 <div>]
-                    <h3 class="fmb-font-color align-center">설비별 세정 수량</h3>
+                    <h2 class="fmb-font-color align-center">설비별 세정 수량</h2>
                     <div id="chart1" style="height: 150px;"></div>
                 </div>
                 </div>
@@ -104,35 +104,36 @@
             <div class="col-md-8">
                 <div class="row">
                     <div class='col-md-12'>
-                        <h3 class="fmb-font-color align-center  margin-bottom">일일 종합현황</h3>
+                        <h2 class="fmb-font-color align-center  margin-bottom">일일 종합현황</h2>
                         <div class="col-md-4" style="border: 1px;">
-                            <h4 class="fmb-font-color align-center">전일 인당 생산량(EA) &nbsp; &nbsp;<span id=txtProd_day1>0</span>EA</h4>
-                            <h4 class="fmb-font-color align-center">금일 인당 생산량(EA) &nbsp; &nbsp;<span id=txtProd_day2>0</span>EA</h4>
-                            <div id="chart_prod" style="height: 150px;"></div>
+                            <h3 class="fmb-font-color align-center">전일 인당 생산량(EA) &nbsp; &nbsp;<span id=txtProd_day1>0</span>EA</h3>
+                            <h3 class="fmb-font-color align-center">금일 인당 생산량(EA) &nbsp; &nbsp;<span id=txtProd_day2>0</span>EA</h3>
+                            <div id="chart_prod"></div>
                     
                         </div>
                         <div class="col-md-4" style="border: 1px;">
-                            <h4 class="fmb-font-color align-center">전일 세정 작업 공수(Min) &nbsp; &nbsp;<span id=txtWashOper_day1>0</span>분</h4>
-                            <h4 class="fmb-font-color align-center">금일 세정 작업 공수(Min) &nbsp; &nbsp;<span id=txtWashOper_day2>0</span>분</h4>
-                            <div id="chart_wash_oper" style="height: 150px;"></div>
+                            <h3 class="fmb-font-color align-center">전일 세정 작업 공수(Min) &nbsp; &nbsp;<span id=txtWashOper_day1>0</span>분</h3>
+                            <h3 class="fmb-font-color align-center">금일 세정 작업 공수(Min) &nbsp; &nbsp;<span id=txtWashOper_day2>0</span>분</h3>
+                            <div id="chart_wash_oper"></div>
                     
                     
                         </div>
                         <div class="col-md-4" style="border: 1px;">
-                            <h4 class="fmb-font-color align-center">전일 불량수량 &nbsp; &nbsp;<span id=txtWashLoss_day1>0</span>EA</h4>
-                            <h4 class="fmb-font-color align-center">금일 불량수량 &nbsp; &nbsp;<span id=txtWashLoss_day2>0</span>EA</h4>
-                            <div id="chart_wash_loss" style="height: 150px;"></div>
+                            <h3 class="fmb-font-color align-center">전일 불량수량 &nbsp; &nbsp;<span id=txtWashLoss_day1>0</span>EA</h3>
+                            <h3 class="fmb-font-color align-center">금일 불량수량 &nbsp; &nbsp;<span id=txtWashLoss_day2>0</span>EA</h3>
+                            <div id="chart_wash_loss""></div>
                     
+                        </div>
+                    </div>
+                    <div class="col-md-12 right_bottom">
+                        <h2 class="fmb-font-color align-center">일별 생산수량 및 불량률</h2>
+                        <div>
+                            <div id="chart2" style="height: 150px;"></div>
                         </div>
                     </div>
                 </div>
                <div class="row">
-                <div class="col-md-12">
-                    <h3 class="fmb-font-color align-center">일별 생산수량 및 불량률</h3>
-                    <div>
-                        <div id="chart2" style="height: 150px;"></div>
-                    </div>
-                </div>
+                
                </div>
                 
                
