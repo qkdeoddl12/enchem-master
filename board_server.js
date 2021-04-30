@@ -421,11 +421,11 @@ app.post('/getDailyTotaldata', function (request, response) {
 
 //일일 데이터
 function selectDailydata_diff(conn,callback){
-    let day_Query = `SELECT DATE(OUT_TIME) AS OUT_TIME,sum(if(LOSS='F',1,0)) AS cnt,sum(if(LOSS='T',1,0)) AS loss
+    let day_Query = `    SELECT DATE(CREATETIME) AS OUT_TIME,sum(if(LOSS='F',if(STATUS='O',1,0),0)) AS cnt,sum(if(LOSS='T',1,0)) AS loss,sum(if(STATUS='I',1,0)) AS in_cnt
     FROM drum_data_log
-    WHERE DATE(OUT_TIME) BETWEEN DATE_SUB('2021-04-23',INTERVAL 1 DAY) AND '2021-04-23'  AND (STATUS='O' AND STATUS!='D' )
-    GROUP BY DATE(OUT_TIME)
-    ORDER BY DATE(OUT_TIME) DESC` 
+    WHERE DATE(CREATETIME) BETWEEN DATE_SUB(curdate(),INTERVAL 1 DAY) AND curdate()  AND STATUS IN ('O','I')
+    GROUP BY DATE(CREATETIME)
+    ORDER BY DATE(CREATETIME) DESC` 
 
     //console.log(day_Query)
 
@@ -470,26 +470,26 @@ function selectDailydata_diff(conn,callback){
 
 //주간 데이터
 function selectWeeklydata_diff(conn,callback){
-    let day_Query = `select OUT_TIME,ifnull(cnt,0) as cnt,ifnull(loss,0) as loss from
+    let day_Query = `   
+     select OUT_TIME,ifnull(cnt,0) as cnt,ifnull(loss,0) as loss,ifnull(in_cnt,0) as in_cnt from
 
- (SELECT '금주' AS OUT_TIME,sum(if(LOSS='F',1,0)) AS cnt,sum(if(LOSS='T',1,0)) AS loss
+ (SELECT '금주' AS OUT_TIME,sum(if(LOSS='F',if(STATUS='O',1,0),0)) AS cnt,sum(if(LOSS='T',1,0)) AS loss,sum(if(STATUS='I',1,0)) AS in_cnt
     FROM drum_data_log
-    WHERE DATE(OUT_TIME) BETWEEN  (SELECT ADDDATE(CURDATE(), - WEEKDAY(CURDATE()) + 0 ))
+    WHERE DATE(CREATETIME) BETWEEN  (SELECT ADDDATE(CURDATE(), - WEEKDAY(CURDATE()) + 0 ))
     AND
-        (SELECT ADDDATE(CURDATE(), - WEEKDAY(CURDATE()) + 6 ))  AND (STATUS='O' AND STATUS!='D' )
+        (SELECT ADDDATE(CURDATE(), - WEEKDAY(CURDATE()) + 6 ))  AND (STATUS IN ('O','I') AND STATUS!='D' )
         
          
          union
         
-       SELECT '전주' AS OUT_TIME,sum(if(LOSS='F',1,0)) AS cnt,sum(if(LOSS='T',1,0)) AS loss
+       SELECT '전주' AS OUT_TIME,sum(if(LOSS='F',if(STATUS='O',1,0),0)) AS cnt,sum(if(LOSS='T',1,0)) AS loss,sum(if(STATUS='I',1,0)) AS in_cnt
     FROM drum_data_log
-    WHERE DATE(OUT_TIME) BETWEEN ADDDATE( DATE_SUB(CURDATE(),INTERVAL 1 WEEK), - WEEKDAY(DATE_SUB(CURDATE(),INTERVAL 1 WEEK)) + 0 ) 
+    WHERE DATE(CREATETIME) BETWEEN ADDDATE( DATE_SUB(CURDATE(),INTERVAL 1 WEEK), - WEEKDAY(DATE_SUB(CURDATE(),INTERVAL 1 WEEK)) + 0 ) 
                  
                  and
-                          ADDDATE( DATE_SUB(CURDATE(),INTERVAL 1 WEEK), - WEEKDAY(DATE_SUB(CURDATE(),INTERVAL 1 WEEK)) + 6 )  AND (STATUS='O' AND STATUS!='D' )
+                          ADDDATE( DATE_SUB(CURDATE(),INTERVAL 1 WEEK), - WEEKDAY(DATE_SUB(CURDATE(),INTERVAL 1 WEEK)) + 6 )  AND (STATUS IN ('O','I') AND STATUS!='D' )
                           
                           ) d3
-
     ` 
 
     //console.log(day_Query)
@@ -535,20 +535,21 @@ function selectWeeklydata_diff(conn,callback){
 
 //월별 데이터
 function selectMonthlydata_diff(conn,callback){
-    let day_Query = `select OUT_TIME,ifnull(cnt,0) as cnt,ifnull(loss,0) as loss from 
+    let day_Query = `         select OUT_TIME,ifnull(cnt,0) as cnt,ifnull(loss,0) as loss,ifnull(in_cnt,0) as in_cnt from 
 
- (SELECT '금울' AS OUT_TIME,sum(if(LOSS='F',1,0)) AS cnt,sum(if(LOSS='T',1,0)) AS loss
+ (SELECT '금월' AS OUT_TIME,sum(if(LOSS='F',if(STATUS='O',1,0),0)) AS cnt,sum(if(LOSS='T',1,0)) AS loss,sum(if(STATUS='I',1,0)) AS in_cnt
     FROM drum_data_log
-    WHERE DATE_FORMAT(date(OUT_TIME),'%Y-%m')=DATE_FORMAT(curdate(),'%Y-%m')  AND (STATUS='O' AND STATUS!='D' )
+    WHERE DATE_FORMAT(date(CREATETIME),'%Y-%m')=DATE_FORMAT(curdate(),'%Y-%m')  AND (STATUS IN ('O','I') AND STATUS!='D' )
         
          
          union
         
-       SELECT '전월' AS OUT_TIME,sum(if(LOSS='F',1,0)) AS cnt,sum(if(LOSS='T',1,0)) AS loss
+       SELECT '전월' AS OUT_TIME,sum(if(LOSS='F',if(STATUS='O',1,0),0)) AS cnt,sum(if(LOSS='T',1,0)) AS loss,sum(if(STATUS='I',1,0)) AS in_cnt
     FROM drum_data_log
-    WHERE DATE_FORMAT(date(OUT_TIME),'%Y-%m')=DATE_FORMAT(DATE_SUB(now(), INTERVAL 1 MONTH),'%Y-%m')  AND (STATUS='O' AND STATUS!='D' )
+    WHERE DATE_FORMAT(date(CREATETIME),'%Y-%m')=DATE_FORMAT(DATE_SUB(now(), INTERVAL 1 MONTH),'%Y-%m')  AND (STATUS IN ('O','I') AND STATUS!='D' )
                           
                           ) d3
+
 ` 
 
     //console.log(day_Query)
@@ -596,7 +597,7 @@ function selectMonthlydata_diff(conn,callback){
 function selectDailydata_plc(conn,callback){
   
     let plc_Query = `SELECT unit_id,max(prod_cnt) AS cnt FROM plc_log
-    WHERE DATE(CONCAT('20',createTime))='2021-04-23' GROUP BY unit_id order by unit_id asc` 
+    WHERE DATE(CONCAT('20',createTime))=curdate() GROUP BY unit_id order by unit_id asc` 
     
     //console.log(plc_Query)
 
@@ -703,7 +704,7 @@ SELECT unit_id,DATE_FORMAT(SEC_TO_TIME(SUM(action1+action2+action3)/10), '%H:%i:
 TIMEDIFF(DATE_FORMAT(concat('20',max(createTime)), '%Y-%m-%d %H:%i:%s'),DATE_FORMAT(concat('20',min(createTime)), '%Y-%m-%d %H:%i:%s')) as workTime,max(prod_cnt) as prod_cnt
  FROM 
 (SELECT createTime,unit_id,max(action1) AS action1,max(action2) AS action2,max(action3) AS action3,work_YN,prod_cnt FROM plc_log
-WHERE prod_cnt<>0 AND DATE(CONCAT('20',createTime))='2021-04-23'
+WHERE prod_cnt<>0 AND DATE(CONCAT('20',createTime))=curdate()
 GROUP BY unit_id,prod_cnt) m
 GROUP BY unit_id
 ` 
@@ -851,7 +852,7 @@ order by DATE(CONCAT('20',createTime)) desc`
 function selectData_washTime(conn,callback){
   
     let plc_Query = `     
-          SELECT '전일' as day,ROUND(IFNULL((sum(realTime)/60)/SUM(prod_cnt),0)) as prod_min FROM  
+          SELECT '전일' as day,ROUND(IFNULL((TIME_TO_SEC('12:00:00')/60)/SUM(prod_cnt),0)) as prod_min FROM  
         (SELECT unit_id,SEC_TO_TIME(SUM(action1+action2+action3)/10) as realTIme,max(prod_cnt) as prod_cnt
         FROM 
         (SELECT createTime,unit_id,max(action1) AS action1,max(action2) AS action2,max(action3) AS action3,work_YN,prod_cnt FROM plc_log
@@ -865,7 +866,8 @@ function selectData_washTime(conn,callback){
         (SELECT createTime,unit_id,max(action1) AS action1,max(action2) AS action2,max(action3) AS action3,work_YN,prod_cnt FROM plc_log
         WHERE prod_cnt<>0 AND DATE(CONCAT('20',createTime))=CURDATE() 
         GROUP BY unit_id,prod_cnt) m
-        GROUP BY unit_id) d` 
+        GROUP BY unit_id) d
+` 
     
     //console.log(plc_Query)
 
@@ -1203,7 +1205,7 @@ function selectCheckPLCCon(conn,callback){
     let plc_Query = `       
 
 select unit_id,status FROM (SELECT startTime,unit_id,status FROM plc_log_work
-WHERE DATE(startTime)='2021-04-29'   ORDER BY startTime DESC LIMIT 10) plc
+WHERE DATE(startTime)=curdate()   ORDER BY startTime DESC LIMIT 10) plc
 GROUP BY unit_id
 ` 
 

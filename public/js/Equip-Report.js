@@ -202,9 +202,9 @@ var chart2 = c3.generate({
 
 
     getDataData()
-    // setInterval(function () {
-    //     getDataData()
-    // },3000)
+    setInterval(function () {
+        getDataData()
+    },3000)
 
     setInterval(function () {
         $("#txtCurrentDateTime").text(now)

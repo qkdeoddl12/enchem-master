@@ -75,6 +75,7 @@ $(function(){
                day1_cnt=data.data[0].cnt//금일
                day1_loss=data.data[0].loss//금일
                day2_cnt=data.data[1].cnt//전일
+               day2_in=data.data[1].in_cnt//전일
 
                let day_diff_per=Math.round(day1_cnt/day2_cnt*100)
 
@@ -89,10 +90,10 @@ $(function(){
                     $('svg.radial-progress circle').css('stroke','rgb(83, 218, 241)')
                     $(".complete").css('stroke-dashoffset','220px')
                 }
-
+                
                 $("#day2_cnt").text(`${day2_cnt}`)
                 $("#day1_cnt").text(`${day1_cnt}`)
-
+                $("#2ndCln_in").text(day2_in)
                 $("#2ndCln_out").text(day1_cnt)
                 $("#2ndCln_loss").text(day1_loss)
                 if(day1_loss!=0&&day1_cnt!=0){

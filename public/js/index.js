@@ -875,7 +875,7 @@ $(function(){
         fields: [
             { title: "ID", type: "text", width: 30 , name: "id", align: "center"  },
             { title: "모니터링보드", type: "text", width: 5 , name: "board_name", align: "center",  },
-            { title: "재생시건", type: "text", width: 30 , name: "board_sec", align: "center"  },
+            { title: "재생시간", type: "text", width: 30 , name: "board_sec", align: "center"  },
             {
 
                     itemTemplate: function(_, item) {

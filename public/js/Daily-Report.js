@@ -53,7 +53,7 @@ $(function(){
     getDataData()
     setInterval(function () {
         getDataData()
-    },10000)
+    },1000)
 
         setInterval(function () {
         $("#txtCurrentDateTime").text(now)
@@ -75,6 +75,7 @@ $(function(){
                day1_cnt=data.data[0].cnt//금일
                day1_loss=data.data[0].loss//금일
                day2_cnt=data.data[1].cnt//전일
+               day2_in=data.data[1].in_cnt//전일
 
                let day_diff_per=Math.round(day1_cnt/day2_cnt*100)
 
@@ -93,6 +94,7 @@ $(function(){
                 $("#day2_cnt").html(`${day2_cnt} / 0   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 총 생산량 : ${day2_cnt}`)
                 $("#day1_cnt").html(`${day1_cnt} / 0   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 총 생산량 : ${day1_cnt}`)
 
+                $("#2ndCln_in").text(day2_in)
                 $("#2ndCln_out").text(day1_cnt)
                 $("#2ndCln_loss").text(day1_loss)
                 $("#2ndCln_loss_per").text( Math.round(day1_loss/day1_cnt*100)+'%' )

@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <META http-equiv="refresh" content="10;url=http://127.0.0.1:3030/Equip-Report.html">
+
     <link href="vendor/bootstrap-3.3.2-dist/css/bootstrap.css" rel="stylesheet">
     <link href="vendor/bootstrap-3.3.2-dist/css/bootstrap-theme.css" rel="stylesheet">
     <link href="vendor/jsgrid-1.5.3/jsgrid-theme.css" rel="stylesheet">
@@ -103,17 +105,19 @@
                     <!-- <h3 class="fmb-font-color align-center">2차 세정</h3> -->
                     <table id="wash_Grid_2" border="1">
                         <tr>
-                           <td colspan="3">불량율</td>
+                           <td colspan="4">불량율</td>
                         </tr>
                        
                       
                        <tr><!-- 두번째 줄 시작 -->
+                        <td>입고수량</td>
                            <td>출고수량</td>
                            <td>불량수량</td>
                            <td>불량율</td>
                           
                        </tr><!-- 두번째 줄 끝 -->
                        <tr><!-- 두번째 줄 시작 -->
+                        <td id='2ndCln_in'>0</td>
                         <td id='2ndCln_out'>0</td>
                         <td id='2ndCln_loss'>0</td>
                         <td id='2ndCln_loss_per'>0%</td>
