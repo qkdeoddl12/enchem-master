@@ -53,7 +53,7 @@ $(function(){
     getDataData()
     setInterval(function () {
         getDataData()
-    },10000)
+    },3000)
 
         setInterval(function () {
         $("#txtCurrentDateTime").text(now)
