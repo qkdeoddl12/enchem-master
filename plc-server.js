@@ -898,6 +898,14 @@ app.post('/downHistory', function (request, response) {
              }else if(item.STATUS=='D'){
                 item.STATUS='삭제'
              }
+
+
+
+              if(item.LOSS=='F'){
+                item.LOSS='정상'
+             }else if(item.LOSS=='T'){
+                item.LOSS='불량'
+             }
        
             //console.log('rows',formatDate(new Date(item.IN_TIME)) 
             let cell_index=index+2
@@ -924,7 +932,7 @@ app.post('/downHistory', function (request, response) {
          .style(style);
     
         ws.cell(cell_index, 6)
-        .string(item.CREATETIME)
+        .string(item.LOSS)
         .style(style);
         ws.cell(cell_index, 7)
         .number(item.day_worker)

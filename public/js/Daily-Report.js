@@ -72,10 +72,26 @@ $(function(){
 
                console.log('getDaydata',data.data)
 
-               day1_cnt=data.data[0].cnt//금일
-               day1_loss=data.data[0].loss//금일
-               day2_cnt=data.data[1].cnt//전일
-               day2_in=data.data[1].in_cnt//전일
+                let day1_cnt=0,day1_loss=0,day2_cnt=0,day2_in=0;
+
+               if(data.data[0]!=undefined){
+                     day1_cnt=data.data[0].cnt//금일
+                    day1_loss=data.data[0].loss//금일
+               }
+
+               if(data.data[1]!=undefined){
+                    day2_cnt=data.data[1].cnt//전일
+                    day2_in=data.data[1].in_cnt//전일
+               }
+
+               console.log('getDaydata',day1_cnt,day1_loss,day2_cnt,day2_in)
+
+
+
+            //    day1_cnt=data.data[0].cnt//금일
+            //    day1_loss=data.data[0].loss//금일
+            //    day2_cnt=data.data[1].cnt//전일
+            //    day2_in=data.data[1].in_cnt//전일
 
                let day_diff_per=Math.round(day1_cnt/day2_cnt*100)
 
@@ -97,7 +113,7 @@ $(function(){
                 $("#2ndCln_in").text(day2_in)
                 $("#2ndCln_out").text(day1_cnt)
                 $("#2ndCln_loss").text(day1_loss)
-                $("#2ndCln_loss_per").text( Math.round(day1_loss/day1_cnt*100)+'%' )
+                $("#2ndCln_loss_per").text( Math.round((isNaN(day1_loss/day1_cnt) ? 0:day1_loss/day1_cnt )*100)+'%' )
                 $("#UPH_val").text(Math.round(day1_cnt/8).toFixed(1) )
                 /* 
                 svg.radial-progress circle {
@@ -116,7 +132,8 @@ $(function(){
               });
 
               $(".percentage").text('')
-              $(".percentage").text(Math.round(day1_cnt/day2_cnt*100)+'%')
+              $(".percentage").text(Math.round((isNaN(day1_cnt/day2_cnt) ? 0:day1_cnt/day2_cnt  )*100)+'%')
+              
 
 
                 
@@ -135,15 +152,45 @@ $(function(){
             dataType: "JSON",
             success: function (data) {
 
-               console.log('getDayPlcdata',data.data)
-                $("#plcData_1").text(data.data[0].cnt)
-                $("#plcData_2").text(data.data[1].cnt)
-                $("#plcData_3").text(data.data[2].cnt)
-                $("#plcData_4").text(data.data[3].cnt)
-                $("#plcData_5").text(data.data[4].cnt)
+                let plc_data1=0,plc_data2=0,plc_data3=0,plc_data4=0,plc_data5=0;
 
-                $("#plc_total1").text(data.data[0].cnt+data.data[1].cnt+data.data[2].cnt)
-                $("#plc_total2").text(data.data[3].cnt+data.data[4].cnt)
+
+                if(data.data[0]!=undefined){
+                    plc_data1=nvl(data.data[0].cnt,0)
+                }
+
+                if(data.data[1]!=undefined){
+                    plc_data2=nvl(data.data[1].cnt,0)
+                }
+
+                if(data.data[2]!=undefined){
+                    plc_data3=nvl(data.data[2].cnt,0)
+                }
+
+                if(data.data[3]!=undefined){
+                    plc_data4=nvl(data.data[3].cnt,0)
+                }
+
+                if(data.data[4]!=undefined){
+                    plc_data5=nvl(data.data[4].cnt,0)
+                }
+                
+                
+                
+                
+                
+
+
+
+               console.log('getDayPlcdata',plc_data1,plc_data2,plc_data3,plc_data4,plc_data5)
+                $("#plcData_1").text(plc_data1)
+                $("#plcData_2").text(plc_data2)
+                $("#plcData_3").text(plc_data3)
+                $("#plcData_4").text(plc_data4)
+                $("#plcData_5").text(plc_data5)
+
+                $("#plc_total1").text(plc_data1+plc_data2+plc_data3)
+                $("#plc_total2").text(plc_data4+plc_data5)
                
                
             },
@@ -159,9 +206,17 @@ $(function(){
             dataType: "JSON",
             success: function (data) {
 
-               console.log('getDailyDate',data.data[0].date_data)
-               $("#txtCurrentDate").text(data.data[0].date_data)
-               $("#txtDailyWorkMan").text(`주간 : ${data.data[0].day_worker}명 야간 : ${data.data[0].night_worker}명`)
+                let date_data='0월 0일',day_worker=0,night_worker=0;
+
+                if(data.data[0]!=undefined){
+                    date_data=data.data[0].date_data
+                    day_worker=data.data[0].day_worker
+                    night_worker=data.data[0].night_worker
+                }
+
+               console.log('getDailyDate',date_data)
+               $("#txtCurrentDate").text(date_data)
+               $("#txtDailyWorkMan").text(`주간 : ${day_worker}명 야간 : ${night_worker}명`)
              
                
                
@@ -173,6 +228,17 @@ $(function(){
 
          
     }
+
+
+    function nvl(str, defaultStr){
+         
+        if(typeof str == "undefined" || str == null || str == "")
+            str = defaultStr ;
+         
+        return str ;
+    }
+
+
 
 
 
