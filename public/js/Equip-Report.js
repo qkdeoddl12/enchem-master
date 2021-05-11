@@ -222,11 +222,14 @@ var chart2 = c3.generate({
 
                //console.log('getDailyEquipdata',data)
 
-               let equip_data=data.equip[0], man=data.man[0][0].day_worker,daily_trend=data.daily_trend[0]
+               let equip_data=data.equip[0], man=0,daily_trend=data.daily_trend[0]
                let date_data=['날짜'],equip_list=[],result_data=[],chart_data=[]
-               
 
-               //console.log('daily_trend',daily_trend)
+
+
+               if(data.man[0][0]!=undefined){
+                man=data.man[0][0].day_worker
+               }
 
 
                equip_data.forEach(function(item,index,arr2){ 

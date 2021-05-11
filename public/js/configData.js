@@ -16,7 +16,11 @@ const STATUS=[
 const MAIN_IP='http://127.0.0.1:3030'
 
 const BOARD_IP='http://127.0.0.1:3050'
- 
+
+
+//const MAIN_IP='http://192.168.21.9:3030'
+
+//const BOARD_IP='http://192.168.21.9:3050'
 
 
     var now = function() {

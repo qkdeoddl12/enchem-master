@@ -363,6 +363,7 @@ var barcode="";
         height: "745px",
         editing: false,
         autoload: true,
+        pagerContainer: "#externalPager",
         pagerFormat: "{first} {prev} {pages} {next} {last}  {pageIndex} ~ {pageCount}",
         pagePrevText: "이전",
         pageNextText: "다음",

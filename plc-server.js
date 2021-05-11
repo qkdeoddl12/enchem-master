@@ -1648,7 +1648,7 @@ function selectDrumData(conn,startDate,endDate,status,text,callback) {
 function selectStatistics(conn,startDate,endDate,callback) {
     
 
-    var extQuery = `SELECT create_date,ship_cnt,ifnull(worker,0) AS worker,workTime,round(ifnull(630/(ship_cnt*worker),0),2) AS prod_time,round(ifnull(realTIme/workTime*100,0)) as work_per,ifnull(loss_cnt,0) AS loss_cnt,ROUND(ifnull(loss_cnt/ship_cnt*100,0)) AS loss_per FROM 
+    var extQuery = `SELECT create_date,ship_cnt,ifnull(worker,0) AS worker,workTime,round(ifnull(630/ship_cnt*worker,0),2) AS prod_time,round(ifnull(realTIme/workTime*100,0)) as work_per,ifnull(loss_cnt,0) AS loss_cnt,ROUND(ifnull(loss_cnt/ship_cnt*100,0)) AS loss_per FROM 
                     (
                     SELECT create_date,DATE_FORMAT(SEC_TO_TIME(avg(realTIme)), '%H:%i:%s') AS realTIme ,DATE_FORMAT(SEC_TO_TIME(avg(workTime)), '%H:%i:%s') AS workTime,sum(prod_cnt),round(realTIme/workTime*100) FROM 
                     (SELECT create_date,unit_id,(SUM(action1+action2+action3)/10) as realTIme, 
