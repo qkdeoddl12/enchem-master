@@ -70,13 +70,14 @@ $(function(){
             dataType: "JSON",
             success: function (data) {
 
-               console.log('getDaydata',data.data)
+               //console.log('getDaydata',data.data)
 
                 let day1_cnt=0,day1_loss=0,day2_cnt=0,day2_in=0;
 
                if(data.data[0]!=undefined){
                      day1_cnt=data.data[0].cnt//금일
                     day1_loss=data.data[0].loss//금일
+                    day1_in=data.data[0].in_cnt//금일
                }
 
                if(data.data[1]!=undefined){
@@ -84,7 +85,7 @@ $(function(){
                     day2_in=data.data[1].in_cnt//전일
                }
 
-               console.log('getDaydata',day1_cnt,day1_loss,day2_cnt,day2_in)
+               //console.log('getDaydata',day1_cnt,day1_loss,day2_cnt,day2_in)
 
 
 
@@ -110,11 +111,11 @@ $(function(){
                 $("#day2_cnt").html(`${day2_cnt} / 0   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 총 생산량 : ${day2_cnt}`)
                 $("#day1_cnt").html(`${day1_cnt} / 0   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 총 생산량 : ${day1_cnt}`)
 
-                $("#2ndCln_in").text(day2_in)
+                $("#2ndCln_in").text(day1_in)
                 $("#2ndCln_out").text(day1_cnt)
                 $("#2ndCln_loss").text(day1_loss)
                 $("#2ndCln_loss_per").text( Math.round((isNaN(day1_loss/day1_cnt) ? 0:day1_loss/day1_cnt )*100)+'%' )
-                $("#UPH_val").text(Math.round(day1_cnt/8).toFixed(1) )
+                $("#UPH_val").text(Math.round(day1_cnt/10.5).toFixed(1) )
                 /* 
                 svg.radial-progress circle {
                     fill: rgba(0,0,0,0);
@@ -182,7 +183,7 @@ $(function(){
 
 
 
-               console.log('getDayPlcdata',plc_data1,plc_data2,plc_data3,plc_data4,plc_data5)
+               //console.log('getDayPlcdata',plc_data1,plc_data2,plc_data3,plc_data4,plc_data5)
                 $("#plcData_1").text(plc_data1)
                 $("#plcData_2").text(plc_data2)
                 $("#plcData_3").text(plc_data3)
@@ -214,7 +215,7 @@ $(function(){
                     night_worker=data.data[0].night_worker
                 }
 
-               console.log('getDailyDate',date_data)
+               //console.log('getDailyDate',date_data)
                $("#txtCurrentDate").text(date_data)
                $("#txtDailyWorkMan").text(`주간 : ${day_worker}명 야간 : ${night_worker}명`)
              

@@ -139,5 +139,33 @@ font-size: 20px;
     text-align: right;
 }
 
+.jsgrid {
+    position: relative;
+    overflow: hidden;
+    font-size: 3em;
+}
+
+
+.jsgrid-pager-page > a{
+    color: aliceblue;
+}
+.jsgrid-pager {
+    color: aliceblue;
+}
+.jsgrid-pager-nav-button {
+    color: aliceblue;
+}
+
+.jsgrid-pager-nav-button > a {
+    color: aliceblue;
+}
+.jsgrid-pager-current-page {
+    font-weight: bold;
+    color: lightcoral;
+}
+
 /* .jsgrid-table tbody{
     overflow-y: auto
+
+
+    

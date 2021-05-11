@@ -159,9 +159,10 @@ app.post('/logout', function (req, res) {
 
 //모니터링보드 조회
 app.post('/getMonitordata', function (request, response) {
-    
 
-    selectMonitor(con,function(ret){
+    let id=request.body.id
+
+    selectMonitor(con,id,function(ret){
         response.json(ret)
     })
     
@@ -230,6 +231,143 @@ app.post('/getBoarddata', function (request, response) {
 });
 
 
+//통계 데이터 
+app.post('/getStatistics', function (request, response) {
+    
+    var startDate=request.body.startDate;
+    var endDate=request.body.endDate;
+
+    let board_data=[],userBoard_data=[];
+
+    //console.log('server_data',request.body)
+
+
+      selectStatistics(con,startDate,endDate,function(ret){
+        response.json(ret)
+    })
+
+});
+
+//통계 엑셀 다운로드 
+app.post('/downStatistics', function (request, response) {
+
+    var startDate=request.body.startDate;
+    var endDate=request.body.endDate;
+
+
+    console.log('request.body',request.body)
+
+    
+
+     // Create a new instance of a Workbook class
+     var wb = new xl.Workbook();
+
+     // Add Worksheets to the workbook
+     var ws = wb.addWorksheet('Sheet 1');
+     //var ws2 = wb.addWorksheet('Sheet 2');
+ 
+     // Create a reusable style
+     var style = wb.createStyle({
+       font: {
+         color: '#000000',
+         size: 12,
+       }
+       // ,numberFormat: '$#,##0.00; ($#,##0.00); -',
+     });
+
+     ws.cell(1, 1)
+           .string('일자')
+           .style(style);
+         ws.cell(1, 2)
+           .string('세정수량')
+           .style(style);
+     
+         // Set value of cell B1 to 200 as a number type styled with paramaters of style
+         ws.cell(1, 3)
+         .string('세척인원')
+         .style(style);
+     
+         // Set value of cell C1 to a formula styled with paramaters of style
+         ws.cell(1, 4)
+         .string('가동시간')
+         .style(style);
+     
+         // Set value of cell A2 to 'string' styled with paramaters of style
+         ws.cell(1, 5)
+         .string('가동율')
+         .style(style);
+    
+        ws.cell(1, 6)
+        .string('작업공수')
+        .style(style);
+        ws.cell(1, 7)
+        .string('불량수량')
+        .style(style);
+        ws.cell(1, 8)
+        .string('불량율')
+        .style(style);
+     
+         // Set value of cell A3 to true as a boolean type styled with paramaters of style but with an adjustment to the font size.
+        
+         selectStatistics_excel(con,startDate,endDate,function(data){
+
+            
+
+        //console.log('data',data)
+        data.forEach(function(item,index,arr2){
+
+            //console.log('rows',formatDate(new Date(item.IN_TIME)) 
+        let cell_index=index+2
+        ws.cell(cell_index, 1)
+           .string(item.create_date)
+           .style(style);
+         ws.cell(cell_index, 2)
+           .number(item.ship_cnt)
+           .style(style);
+     
+         // Set value of cell B1 to 200 as a number type styled with paramaters of style
+         ws.cell(cell_index, 3)
+         .number(item.worker)
+         .style(style);
+     
+         // Set value of cell C1 to a formula styled with paramaters of style
+         ws.cell(cell_index, 4)
+         .string(item.workTime)
+         .style(style);
+     
+         // Set value of cell A2 to 'string' styled with paramaters of style
+         ws.cell(cell_index, 5)
+         .number(item.work_per)
+         .style(style);
+    
+        ws.cell(cell_index, 6)
+        .number(item.prod_time)
+        .style(style);
+        ws.cell(cell_index, 7)
+        .number(item.loss_cnt)
+        .style(style);
+        ws.cell(cell_index, 8)
+        .number(item.loss_per)
+        .style(style);
+     
+         
+        })
+
+        wb.write(`통계_${startDate} ~ ${endDate}.xlsx`, response);
+
+
+
+     })
+
+     // Set value of cell A1 to 100 as a number type styled with paramaters of style
+    
+    
+       
+      // download
+
+});
+
+
 //이력조회 데이터 
 app.post('/getHistorydata', function (request, response) {
    
@@ -243,6 +381,23 @@ app.post('/getHistorydata', function (request, response) {
 
 
     selectHistory(con,startDate,endDate,status,loss,text,function(ret){
+        response.json(ret)
+    })
+
+});
+
+//용기괸리 데이터 
+app.post('/getDrumdata', function (request, response) {
+   
+    var startDate=request.body.startDate;
+    var endDate=request.body.endDate;
+    var status=request.body.status;
+    var text=request.body.text;
+
+    //console.log('server_data',request.body)
+
+
+    selectDrumData(con,startDate,endDate,status,text,function(ret){
         response.json(ret)
     })
 
@@ -279,13 +434,13 @@ app.post('/createPOPData', function (request, response) {
     
 
     if(status=='O'){
-        let out_query=`UPDATE drum_data set STATUS='${status}', OUT_TIME='${now()}' where BARCODE='${barcode}' and STATUS='I' and date(CREATETIME)=curdate()`
+        let out_query=`UPDATE drum_data set STATUS='${status}', OUT_TIME='${now()}' where BARCODE='${barcode}' and STATUS='I' and date(CREATETIME) between DATE_ADD(curdate(),INTERVAL -1 day) and  curdate()`
          con.query(out_query, function(err,res){
             if(err) throw err;
             console.log("### SMS sended to ", now(),res);
             if(res.affectedRows==1){
                  con.query(`INSERT INTO drum_data_log (IDX,BARCODE,STATUS,IN_TIME,OUT_TIME,LOSS,CREATETIME,CREATETIME_LOG,LOSS_CNT ) 
-                 select IDX,BARCODE,STATUS,IN_TIME,OUT_TIME,LOSS,CREATETIME,now(),LOSS_CNT from drum_data where date(CREATETIME)=curdate() and BARCODE='${barcode}'`, function(err,res){
+                 select IDX,BARCODE,STATUS,IN_TIME,OUT_TIME,LOSS,CREATETIME,now(),LOSS_CNT from drum_data where date(CREATETIME) between DATE_ADD(curdate(),INTERVAL -1 day) and  curdate() and BARCODE='${barcode}'`, function(err,res){
                     if(err) throw err;
                     console.log("### SMS sended to ", now(),res);
                     response.json({ret:true,msg:'출고로 변경되었습니다.'})
@@ -456,6 +611,68 @@ app.post('/removePOPData', function (request, response) {
  
 
         
+
+});
+
+
+
+
+//용기관리 출고
+app.post('/updateDrum_ship', function (request, response) {
+
+
+    let drum_data=JSON.parse(request.body.selectedItems)
+    ,update_data="",sqls="";
+
+
+
+
+    console.log(drum_data[0])
+    
+
+    drum_data.forEach(function(item,index,arr2){
+        //update_data.push(['O',now(),item,'I'])
+        if(index==0){
+            update_data+=item
+            
+        }else{
+             update_data+=`,${item}`
+        }
+       
+    })
+
+    
+    // update_data.forEach(function(item){
+    //     sqls += mysql.format(sql, item);
+    // });
+
+
+    console.log('sqls',sqls)
+
+        let sql=`UPDATE drum_data set STATUS='O', OUT_TIME='${now()}' where IDX in (${update_data}) and STATUS='I'; `
+
+        console.log('sql',sql)
+
+    
+
+  
+        con.query(sql, function(err,res){
+            if(err) throw err;
+            console.log("### updateDrum_ship sended to ", now(),res);
+            if(res.affectedRows!=0){
+                //response.json({ret:true,msg:'삭제처리 되었습니다.'})
+                con.query(`INSERT INTO drum_data_log (IDX,BARCODE,STATUS,IN_TIME,OUT_TIME,LOSS,CREATETIME,CREATETIME_LOG,LOSS_CNT ) 
+                 select IDX,BARCODE,STATUS,IN_TIME,OUT_TIME,LOSS,CREATETIME,now(),LOSS_CNT from drum_data where IDX in (${update_data})`, function(err,res){
+                    if(err) throw err;
+                    console.log("### SMS sended to ", now(),res);
+                    response.json({ret:true,msg:'출고로 변경되었습니다.'})
+
+
+                });
+            }else{
+                //response.json({ret:false,msg:'삭제처리가 실패되었습니다.'})
+            }
+    });
 
 });
 
@@ -1067,16 +1284,19 @@ function selectsPOP(conn,type,text,date,callback) {
 
 
     switch(date){
+        case 'yesterday' :
+            extQuery+=` and date(CREATETIME)=date(DATE_ADD(NOW(),INTERVAL -1 DAY )) `
+            break;
         case 'day' :
             extQuery+=` and date(CREATETIME)=curdate()`
             break;
-         case 'week' :
+        case 'week' :
             extQuery+=` and date(CREATETIME) BETWEEN date(DATE_ADD(NOW(),INTERVAL -1 WEEK )) AND curdate()`
             break;
-         case 'mon' :
+        case 'mon' :
             extQuery+=` and date(CREATETIME) BETWEEN date(DATE_ADD(NOW(),INTERVAL -1 MONTH )) AND curdate()`
             break;
-         case 'year' :
+        case 'year' :
             extQuery+=` and date(CREATETIME) BETWEEN date(DATE_ADD(NOW(),INTERVAL -1 YEAR )) AND curdate()`
             break;
     }
@@ -1171,12 +1391,17 @@ function selectUser(conn,text,callback) {
 }
 
 
-function selectMonitor(conn,callback) {
+function selectMonitor(conn,id,callback) {
     
 
-    var extQuery = " select id,board_name,board_addr,board_sec from tbl_board where 1=1" 
+    //var extQuery = " select id,board_name,board_addr,board_sec from tbl_board where 1=1" 
+    var extQuery = `SELECT b.ID,boardIDX,board_name,board_addr,board_sec FROM 
+                    tbl_user_board u
+                    LEFT JOIN tbl_board b
+                    ON b.id=u.boardIDX 
+                    WHERE u.ID='${id}'`
 
-    extQuery+=` order by id `
+    extQuery+=` order by boardIDX `
     console.log(extQuery)
 
 
@@ -1352,6 +1577,225 @@ function selectHistory(conn,startDate,endDate,status,loss,text,callback) {
 
 }
 
+function selectDrumData(conn,startDate,endDate,status,text,callback) {
+    
+
+    var extQuery = " SELECT IDX, BARCODE, `STATUS`, IN_TIME, OUT_TIME, LOSS, LOSS_CNT, CREATETIME, MODIFIEDTIME, DELYN FROM drum_data where 1=1" 
+
+    
+
+    if(startDate!=''&&endDate!=''){
+        extQuery+=` and date(CREATETIME) between '${startDate}' and '${endDate}'`
+    }
+
+    if(status!=''){
+        extQuery+=` and STATUS = '${status}'`
+    }
+
+   
+    if(text!=''){
+        extQuery+=` and BARCODE = '${text}'`
+    }
+
+
+    
+
+    extQuery+=` order by CREATETIME DESC`
+    console.log(extQuery)
+
+
+    conn.query(extQuery, function (err,rows){
+        if(err){
+            console.log("MySQL Query Execution Failed....");
+            console.log(err);
+            var fail_ret={itemsCount:0,data:[],status:'FAIL'}
+            if(callback){
+                callback(fail_ret);
+            }
+            return fail_ret;
+        }
+        //console.log('rows',rows)
+
+         rows.forEach(function(item,index,arr2){
+
+            if(item.IN_TIME!==null){
+                item.IN_TIME=formatDate(new Date(item.IN_TIME))
+            }
+            if(item.OUT_TIME!==null){
+                item.OUT_TIME=formatDate(new Date(item.OUT_TIME))
+            }
+            if(item.CREATETIME!==null){
+                item.CREATETIME=formatDate(new Date(item.CREATETIME))
+            }
+            
+           
+            //console.log(item)
+        })
+
+        
+        var ret={itemsCount:rows.length,data:rows,status:'OK'}
+
+        if(callback){
+            callback(ret);
+        }
+        return ret;
+    });
+
+}
+
+
+
+function selectStatistics(conn,startDate,endDate,callback) {
+    
+
+    var extQuery = `SELECT create_date,ship_cnt,ifnull(worker,0) AS worker,workTime,round(ifnull(630/(ship_cnt*worker),0),2) AS prod_time,round(ifnull(realTIme/workTime*100,0)) as work_per,ifnull(loss_cnt,0) AS loss_cnt,ROUND(ifnull(loss_cnt/ship_cnt*100,0)) AS loss_per FROM 
+                    (
+                    SELECT create_date,DATE_FORMAT(SEC_TO_TIME(avg(realTIme)), '%H:%i:%s') AS realTIme ,DATE_FORMAT(SEC_TO_TIME(avg(workTime)), '%H:%i:%s') AS workTime,sum(prod_cnt),round(realTIme/workTime*100) FROM 
+                    (SELECT create_date,unit_id,(SUM(action1+action2+action3)/10) as realTIme, 
+                    TIME_TO_SEC(TIMEDIFF(DATE_FORMAT(concat('20',max(createTime)), '%Y-%m-%d %H:%i:%s'),DATE_FORMAT(concat('20',min(createTime)), '%Y-%m-%d %H:%i:%s')))  as workTime,max(prod_cnt) as prod_cnt
+                    FROM 
+                    (SELECT DATE(CONCAT('20',createTime)) AS create_date,createTime,unit_id,max(action1) AS action1,max(action2) AS action2,max(action3) AS action3,work_YN,prod_cnt FROM plc_log
+                    WHERE prod_cnt<>0 
+                    GROUP BY DATE(CONCAT('20',createTime)),unit_id,prod_cnt) m
+                    GROUP BY create_date,unit_id) tot
+                    GROUP BY create_date
+                    ) TIME
+                    LEFT JOIN (SELECT date(OUT_TIME) AS OUT_TIME,COUNT(*) AS ship_cnt FROM drum_data
+                    WHERE STATUS='O' AND LOSS='F' AND DELYN='N'
+                    GROUP BY date(OUT_TIME)) out_cnt
+                    ON create_date=OUT_TIME
+                    LEFT JOIN (SELECT date(CREATETIME) AS CREATETIME,COUNT(*) AS loss_cnt FROM drum_data_log
+                    WHERE LOSS='T'
+                    GROUP BY date(CREATETIME)) loss
+                    ON create_date=CREATETIME
+                    LEFT JOIN 
+                    (SELECT date(work_date) AS work_date,(day_worker+night_worker) AS worker FROM tbl_worker_info) WORK
+                    ON create_date=work_date
+                    where 1=1
+                    ` 
+
+    
+
+    if(startDate!=''&&endDate!=''){
+        extQuery+=` and date(create_date) between '${startDate}' and '${endDate}'`
+    }
+
+    
+
+    extQuery+=` ORDER BY create_date ASC`
+    console.log(extQuery)
+
+
+    conn.query(extQuery, function (err,rows){
+        if(err){
+            console.log("MySQL Query Execution Failed....");
+            console.log(err);
+            var fail_ret={itemsCount:0,data:[],status:'FAIL'}
+            if(callback){
+                callback(fail_ret);
+            }
+            return fail_ret;
+        }
+        //console.log('rows',rows)
+
+         rows.forEach(function(item,index,arr2){
+
+            if(item.create_date!==null){
+                item.create_date=formatDate2(new Date(item.create_date))
+            }
+         
+            
+           
+            //console.log(item)
+        })
+
+        
+        var ret={itemsCount:rows.length,data:rows,status:'OK'}
+
+        if(callback){
+            callback(ret);
+        }
+        return ret;
+    });
+
+}
+
+
+
+function selectStatistics_excel(conn,startDate,endDate,callback) {
+    
+
+    var extQuery = `SELECT create_date,ship_cnt,ifnull(worker,0) AS worker,workTime,round(ifnull(630/(ship_cnt*worker),0),2) AS prod_time,round(ifnull(realTIme/workTime*100,0)) as work_per,ifnull(loss_cnt,0) AS loss_cnt,ROUND(ifnull(loss_cnt/ship_cnt*100,0)) AS loss_per FROM 
+                    (
+                    SELECT create_date,DATE_FORMAT(SEC_TO_TIME(avg(realTIme)), '%H:%i:%s') AS realTIme ,DATE_FORMAT(SEC_TO_TIME(avg(workTime)), '%H:%i:%s') AS workTime,sum(prod_cnt),round(realTIme/workTime*100) FROM 
+                    (SELECT create_date,unit_id,(SUM(action1+action2+action3)/10) as realTIme, 
+                    TIME_TO_SEC(TIMEDIFF(DATE_FORMAT(concat('20',max(createTime)), '%Y-%m-%d %H:%i:%s'),DATE_FORMAT(concat('20',min(createTime)), '%Y-%m-%d %H:%i:%s')))  as workTime,max(prod_cnt) as prod_cnt
+                    FROM 
+                    (SELECT DATE(CONCAT('20',createTime)) AS create_date,createTime,unit_id,max(action1) AS action1,max(action2) AS action2,max(action3) AS action3,work_YN,prod_cnt FROM plc_log
+                    WHERE prod_cnt<>0 
+                    GROUP BY DATE(CONCAT('20',createTime)),unit_id,prod_cnt) m
+                    GROUP BY create_date,unit_id) tot
+                    GROUP BY create_date
+                    ) TIME
+                    LEFT JOIN (SELECT date(OUT_TIME) AS OUT_TIME,COUNT(*) AS ship_cnt FROM drum_data
+                    WHERE STATUS='O' AND LOSS='F' AND DELYN='N'
+                    GROUP BY date(OUT_TIME)) out_cnt
+                    ON create_date=OUT_TIME
+                    LEFT JOIN (SELECT date(CREATETIME) AS CREATETIME,COUNT(*) AS loss_cnt FROM drum_data_log
+                    WHERE LOSS='T'
+                    GROUP BY date(CREATETIME)) loss
+                    ON create_date=CREATETIME
+                    LEFT JOIN 
+                    (SELECT date(work_date) AS work_date,(day_worker+night_worker) AS worker FROM tbl_worker_info) WORK
+                    ON create_date=work_date
+                    where 1=1
+                    ` 
+
+    
+
+    if(startDate!=''&&endDate!=''){
+        extQuery+=` and date(create_date) between '${startDate}' and '${endDate}'`
+    }
+
+    
+
+    extQuery+=` ORDER BY create_date ASC`
+    console.log(extQuery)
+
+
+    conn.query(extQuery, function (err,rows){
+        if(err){
+            console.log("MySQL Query Execution Failed....");
+            console.log(err);
+            var fail_ret={itemsCount:0,data:[],status:'FAIL'}
+            if(callback){
+                callback(fail_ret);
+            }
+            return fail_ret;
+        }
+        //console.log('rows',rows)
+
+         rows.forEach(function(item,index,arr2){
+
+            if(item.create_date!==null){
+                item.create_date=formatDate2(new Date(item.create_date))
+            }
+         
+            
+           
+            //console.log(item)
+        })
+
+        
+       var ret=rows
+        if(callback){
+            callback(ret);
+        }
+
+    });
+
+}
+
 
 function selectHistory_stats(conn,startDate,endDate,status,loss,text,callback) {
     
@@ -1467,6 +1911,13 @@ function formatDate(date) {
 
 
     return `${date.getFullYear()}-${lpad((date.getMonth() + 1),2,'0')}-${lpad(date.getDate(),2,'0')} ${lpad(date.getHours(),2,'0')}:${lpad(date.getMinutes(),2,'0')}:${lpad(date.getSeconds(),2,'0')}`
+}
+
+
+function formatDate2(date) {
+
+
+    return `${date.getFullYear()}-${lpad((date.getMonth() + 1),2,'0')}-${lpad(date.getDate(),2,'0')}`
 }
 
 

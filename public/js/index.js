@@ -12,6 +12,9 @@ $(function(){
     let user_mode='I'
     var password_data=""
 
+     var selectedItems = [];
+    var ALLselectedItems = [];
+
     var now = function() {
         var date = new Date();
         var m = date.getMonth()+1;
@@ -19,6 +22,18 @@ $(function(){
         var h = date.getHours();
         var i = date.getMinutes();
         var s = date.getSeconds();
+        var get_date = date.getFullYear()+'-'+(m>9?m:'0'+m)+'-'+(d>9?d:'0'+d);
+    
+        return get_date;
+    }
+
+
+
+    var now_date = function() {
+        var date = new Date();
+        var m = date.getMonth()+1;
+        var d = date.getDate();
+       
         var get_date = date.getFullYear()+'-'+(m>9?m:'0'+m)+'-'+(d>9?d:'0'+d);
     
         return get_date;
@@ -36,8 +51,36 @@ $(function(){
     $("#dateEnd").val(now())
 
 
+      $("#dateStart_mng").datepicker({
+        'format': 'yyyy-mm-dd'
+    });
+
+    $("#dateEnd_mng").datepicker({
+        'format': 'yyyy-mm-dd'
+    });
+    $("#dateStart_mng").val(now())
+    $("#dateEnd_mng").val(now())
+
+      $("#dateStart_stat").datepicker({
+        'format': 'yyyy-mm-dd'
+    });
+
+    $("#dateEnd_stat").datepicker({
+        'format': 'yyyy-mm-dd'
+    });
+    $("#dateStart_stat").val(now())
+    $("#dateEnd_stat").val(now())
+
+
+
     STATUS.forEach(element => 
         $('#txtStatus').append(`<option value='${element.CODE}'>${element.NAME}</option>`)
+        
+    );
+
+     STATUS.forEach(element => 
+        $('#txtStatus_mng').append(`<option value='${element.CODE}'>${element.NAME}</option>`)
+        
     );
 
     LOSS_DATA.forEach(element => 
@@ -45,6 +88,11 @@ $(function(){
         $('#txtLoss').append(`<option value='${element.CODE}'>${element.NAME}</option>`)
 
     );
+    if(sessionStorage.getItem('ID')!=undefined&&sessionStorage.getItem('PW')!=undefined){
+        
+        processLogin(Erypto.decrypt(sessionStorage.getItem('ID')),Erypto.decrypt(sessionStorage.getItem('PW')))
+    }
+    
 
     // $.ajax({
     //         url: "/login",
@@ -73,8 +121,68 @@ $(function(){
 
     //         }
     //     });
+    
+
+    $("#selectAllCheckbox_d").change(function(item) {
+                selectedItems = [];
+                console.log('selectAllCheckbox_d')
+                //selectedItems=ALLselectedItems
+                if(this.checked) { // check select status
+                    $('.singleCheckbox_d').each(function() {
+
+                     console.log('selectAllCheckbox_d',true)
+                        this.checked = true;
 
 
+
+
+                        selectItem($(this).attr('data-index'));
+                    });
+                }else {
+
+                    $('.singleCheckbox_d').each(function() {
+                        this.checked = false;
+                             console.log('selectAllCheckbox_d',false)
+                        unselectItem($(this).attr('data-index'));
+                    });
+                    selectedItems = [];
+                }
+            });
+
+
+ 
+
+
+
+    $("#btnChangeShip").click(function(){
+
+    //console.log('출고데이터 : ',selectedItems)
+
+           if(confirm(`${selectedItems.length} 건 출고처리하시겠습니까?`)){
+            $.ajax({
+                url: "/updateDrum_ship",
+                type: "POST",
+                dataType: "JSON",
+                data: {
+                    selectedItems: function () {
+                        return JSON.stringify(selectedItems)
+                    }
+
+                },
+                success: function (data) {
+
+                    alert("출고처리되었습니다.");
+                    selectedItems = []
+                    $("#drumDataGrid").jsGrid("loadData")
+
+                },
+                error:function (error) {
+
+                }
+            });
+        }
+
+    })
  
 
 
@@ -132,62 +240,81 @@ $(function(){
             return
         }
 
-        $.ajax({
-            url: "/login",
-            type: "POST",
-            dataType: "JSON",
-            data: {
-                id: function () {
 
-                    return $("#txtID").val()
-                },
-                pw: function () {
+        processLogin($("#txtID").val(),$("#txtPW").val())
 
-                    return $("#txtPW").val()
-                },
-
-            },
-            success: function (data) {
-                console.log('insertUser',data)
-
-                if(data.auth){
-                    sessionStorage.setItem('ID',Erypto.encrypt($("#txtID").val()))
-                     $("#login-div").hide()
-                     $("#main-div").show()
-                     $("#txtID").val('')
-                     $("#txtPW").val('')
-                     $(".tabs-left").empty()
-                     if(data.level!=2){
-                         
-                         $(".tabs-left").append(`
-                         <li class="active"><a href="#MonitorMng" data-toggle="tab">모니터링보드</a></li>
-                    <li><a href="#historyMng" data-toggle="tab">이력조회</a></li>
-                         `)
-
-                     }else{
-                         
-                        $(".tabs-left").append(`
-                         <li class="active"><a href="#MonitorMng" data-toggle="tab">모니터링보드</a></li>
-                    <li><a href="#userMng" data-toggle="tab">사용자관리</a></li>
-                    <li><a href="#systemMng" data-toggle="tab">시스템관리</a></li>
-                    <li><a href="#historyMng" data-toggle="tab">이력조회</a></li>
-                         `)
-                     }
-                     
-                }else{
-                    alert('아이디나 패스워드가 틀렸습니다.')
-                }
-                
-            },
-            error:function (error) {
-                    alert('시스템오류로 인해 다시 로그인해주시기바랍니다.')
-            }
-        });
-
-
-       
 
     })
+
+
+    $("#btnAutoSlide").click(function(){
+
+             var popUrl = MAIN_IP+'/Slide-Report.html'
+            var popOption = "top=10, left=10, width=500, height=600, status=no, menubar=no, toolbar=no, resizable=no";
+            window.open(popUrl, popOption);
+
+    })
+
+
+    function processLogin(id,pw){
+        $.ajax({
+                    url: "/login",
+                    type: "POST",
+                    dataType: "JSON",
+                    data: {
+                        id: function () {
+
+                            return id
+                        },
+                        pw: function () {
+
+                            return pw
+                        },
+
+                    },
+                    success: function (data) {
+                        console.log('insertUser',data)
+
+                        if(data.auth){
+                            sessionStorage.setItem('ID',Erypto.encrypt(id))
+                            sessionStorage.setItem('PW',Erypto.encrypt(pw))
+                            $("#login-div").hide()
+                            $("#main-div").show()
+                            $("#txtID").val('')
+                            $("#txtPW").val('')
+                            $(".tabs-left").empty()
+                            if(data.level!=2){
+                                
+                                $(".tabs-left").append(`
+                                <li class="active"><a href="#MonitorMng" data-toggle="tab">모니터링보드</a></li>
+                            <li><a href="#historyMng" data-toggle="tab">이력조회</a></li>
+                                `)
+
+                            }else{
+                                
+                                $(".tabs-left").append(`
+                                <li class="active"><a href="#MonitorMng" data-toggle="tab">모니터링보드</a></li>
+                            <li><a href="#userMng" data-toggle="tab">사용자관리</a></li>
+                            <li><a href="#systemMng" data-toggle="tab">시스템관리</a></li>
+                            <li><a href="#drumMng" data-toggle="tab">용기관리</a></li>
+                            <li><a href="#historyMng" data-toggle="tab">이력조회</a></li>
+                            <li><a href="#statistics" data-toggle="tab">통계</a></li>
+                                `)
+                            }
+
+                            after_login()
+                            
+                        }else{
+                            alert('아이디나 패스워드가 틀렸습니다.')
+                        }
+                        
+                    },
+                    error:function (error) {
+                            alert('시스템오류로 인해 다시 로그인해주시기바랍니다.')
+                    }
+                });
+
+    }
 
     $("#btnLogout").click(function(){
          $.ajax({
@@ -207,6 +334,8 @@ $(function(){
                     $("#login-div").show()
                     $("#main-div").hide()
                 }
+
+                sessionStorage.clear
                 
             },
             error:function (error) {
@@ -247,6 +376,44 @@ $(function(){
                 status:$("#txtStatus").val(),
                 loss:$("#txtLoss").val(),
                 text:$("#txtSearch_His").val()
+
+            }
+               
+        
+            $.each(datas, function(k, v) {
+                console.log(k,v)
+                var i = document.createElement("input");
+                i.setAttribute("type","hidden");
+                i.setAttribute("name",k);
+                i.setAttribute("value",v);
+                f.appendChild(i);
+            });
+
+            f.submit();
+
+            var fid = f.id;
+            document.getElementById(fid).remove();
+
+
+        
+    })
+
+
+
+     $("#btnExcelDown_stat").click(function(e){
+
+
+           
+
+            var f = document.createElement("form");
+
+            f.setAttribute("id","formExcelExport");
+            f.setAttribute("method","post");
+            f.setAttribute("action",'/downStatistics');
+            document.body.appendChild(f);
+            datas={
+                startDate:$("#dateStart_stat").val(),
+                endDate:$("#dateEnd_stat").val()
 
             }
                
@@ -439,6 +606,14 @@ $(function(){
     })
 
 
+     $("#btnDrumData").click(function(){
+        $("#drumDataGrid").jsGrid('loadData') 
+    })
+     $("#btnStatistics").click(function(){
+        $("#statisticsGrid").jsGrid('loadData') 
+    })
+
+
 
     $("#btnSystemSave").click(function(){
             let system_data=new Array()
@@ -485,7 +660,66 @@ $(function(){
     })
 
  
-    //사용자계정 그리드
+    
+
+
+ 
+
+ 
+
+    
+
+   
+
+   
+
+
+
+    
+
+
+
+
+
+       
+
+
+    var selectItem = function(item) {
+
+        selectedItems.push(item);
+        if($(".singleCheckbox_d").length == $(".singleCheckbox_d:checked").length) {
+            $("#selectAllCheckbox_d").prop("checked", true);
+        } else {
+            $("#selectAllCheckbox_d").prop("checked", false);
+        }
+    };
+
+
+    var unselectItem = function(item) {
+        selectedItems = $.grep(selectedItems, function(i) {
+            return i !== item;
+        });
+        if(selectedItems.length == 0) {
+            $('#selectAllCheckbox_d').attr('checked', false);
+        }
+
+        if($(".singleCheckbox_d").length == $(".singleCheckbox_d:checked").length) {
+            $("#selectAllCheckbox_d").prop("checked", true);
+        } else {
+            $("#selectAllCheckbox_d").prop("checked", false);
+        }
+    };
+
+
+    
+    
+
+
+
+
+
+    function after_login(){
+        //사용자계정 그리드
     $("#userGrid").jsGrid({
         width: "100%",
         height: "auto",
@@ -599,8 +833,7 @@ $(function(){
     });
 
 
-
-    //시스템설정 그리드
+       //시스템설정 그리드
     $("#systemGrid").jsGrid({
         width: "100%",
         height: "auto",
@@ -712,7 +945,8 @@ $(function(){
         ]
     });
 
-        //이력조회 그리드
+
+           //이력조회 그리드
     $("#historyGrid").jsGrid({
         width: "100%",
         height: "auto",
@@ -774,7 +1008,154 @@ $(function(){
         ]
     });
 
-   //용기별 통계
+
+            //이력조회 그리드
+    $("#drumDataGrid").jsGrid({
+        width: "100%",
+        height: "auto",
+        editing: false,
+        autoload: true,
+        pageIndex:1,  
+        sorting: true,
+        paging: true,
+        controller:  {
+                loadData: function(filter) {
+                    var d = $.Deferred();
+                    $.ajax({
+                        type: "POST",
+                        url: "/getHistorydata",
+                        dataType: "JSON",
+                        data: {
+                            startDate: function () {
+                                return $("#dateStart").val()
+                            },
+                            endDate: function () {
+                                return $("#dateEnd").val()
+                            },
+                            status: function () {
+                                return $("#txtStatus").val()
+                            },
+                            loss: function () {
+                                return $("#txtLoss").val()
+                            },
+                            text: function () {
+                                return $("#txtSearch_His").val()
+                            }
+                        },
+                    }).done(function(response) {
+                        console.log('ok',response)
+                        //ALLselectedItems=response.data;
+                        // if(response.status == "OK") {
+                        //     $("#txtMsg").text('조회되었습니다.')
+                        // }else{
+                        //     $("#txtMsg").text('조회가 실패되었습니다.')
+                        // }
+
+                        d.resolve(response.data);
+                        
+                    });
+                    return d.promise();
+                }
+
+            },
+ 
+        fields: [
+            { title: "생성일자", type: "text", width: 30 , name: "CREATETIME_LOG", align: "center"  },
+            { title: "용기번호", type: "text", width: 5 , name: "BARCODE", align: "center",  },
+            { title: "상태", type: "select", width: 10 , name: "STATUS", align: "center", items: STATUS, valueField: "CODE", textField: "NAME"  },
+            { title: "입고시간", type: "text", width: 30 , name: "IN_TIME", align: "center"  },
+            { title: "출고시간", type: "text", width: 30 , name: "OUT_TIME", align: "center"  },
+            { title: "불량", type: "select", width: 10 , name: "LOSS", align: "center", items: LOSS_DATA, valueField: "CODE", textField: "NAME"  }
+
+           
+        ]
+    });
+
+     // 용기관리
+     $("#drumDataGrid").jsGrid({
+        width: "100%",
+        height: "auto",
+        editing: false,
+        autoload: true,
+        pageIndex:1,  
+        sorting: true,
+        paging: true,
+        controller:  {
+                loadData: function(filter) {
+                    var d = $.Deferred();
+                    $.ajax({
+                        type: "POST",
+                        url: "/getDrumdata",
+                        dataType: "JSON",
+                        data: {
+                            startDate: function () {
+                                return $("#dateStart_mng").val()
+                            },
+                            endDate: function () {
+                                return $("#dateEnd_mng").val()
+                            },
+                            status: function () {
+                                return $("#txtStatus_mng").val()
+                            },
+                    
+                            text: function () {
+                                return $("#txtSearch_drum").val()
+                            }
+                        },
+                    }).done(function(response) {
+                        console.log('ok',response)
+                        //ALLselectedItems=response.data;
+                        // if(response.status == "OK") {
+                        //     $("#txtMsg").text('조회되었습니다.')
+                        // }else{
+                        //     $("#txtMsg").text('조회가 실패되었습니다.')
+                        // }
+
+                        d.resolve(response.data);
+                        
+                    });
+                    return d.promise();
+                }
+
+            },
+ 
+        fields: [
+            {
+                headerTemplate: function() {
+                    return $("<input>").attr("type", "checkbox").attr("id", "selectAllCheckbox_d")
+                },
+                itemTemplate: function(_, item) {
+                    //console.log('itemitem',item)
+                    return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox_d")
+                        .attr("data-index", item.IDX)
+                        .prop("checked", $.inArray(item, selectedItems) > -1)
+                        .on("change", function () {
+                          /*  if(item.cUserID!=''){
+                                return alert('배분된 데이터입니다.')
+                            }*/
+
+                            $(this).is(":checked") ? selectItem(item.IDX) : unselectItem(item.IDX);
+                        });
+                },
+                align: "center",
+                width: 30,
+                sorting: false,
+                name:'checkbox',
+                visible:true
+            },
+            { title: "생성일자", type: "text", width: 30 , name: "CREATETIME", align: "center"  },
+            { title: "용기번호", type: "text", width: 5 , name: "BARCODE", align: "center",  },
+            { title: "상태", type: "select", width: 10 , name: "STATUS", align: "center", items: STATUS, valueField: "CODE", textField: "NAME"  },
+            { title: "입고시간", type: "text", width: 30 , name: "IN_TIME", align: "center"  },
+            { title: "출고시간", type: "text", width: 30 , name: "OUT_TIME", align: "center"  },
+            { title: "불량", type: "select", width: 10 , name: "LOSS", align: "center", items: LOSS_DATA, valueField: "CODE", textField: "NAME"  }
+
+           
+        ]
+    });
+
+
+    //용기별 통계
    $("#statsGrid").jsGrid({
     width: "100%",
     height: "auto",
@@ -833,11 +1214,8 @@ $(function(){
     });
 
 
-
-
-
-       //모니터링보드 그리드
-    $("#MonitorGrid").jsGrid({
+            //통계 그리드
+    $("#statisticsGrid").jsGrid({
         width: "100%",
         height: "auto",
         editing: false,
@@ -850,10 +1228,15 @@ $(function(){
                     var d = $.Deferred();
                     $.ajax({
                         type: "POST",
-                        url: "/getMonitordata",
+                        url: "/getStatistics",
                         dataType: "JSON",
                         data: {
-                            
+                            startDate: function () {
+                                return $("#dateStart_stat").val()
+                            },
+                            endDate: function () {
+                                return $("#dateEnd_stat").val()
+                            }
                         },
                     }).done(function(response) {
                         console.log('ok',response)
@@ -873,7 +1256,76 @@ $(function(){
             },
  
         fields: [
-            { title: "ID", type: "text", width: 30 , name: "id", align: "center"  },
+            { title: "일자", type: "text", width: 30 , name: "create_date", align: "center"  },
+            { title: "세정수량", type: "text", width: 30 , name: "ship_cnt", align: "center"  },
+            { title: "세척인원", type: "text", width: 30 , name: "worker", align: "center"  },
+            { title: "가동시간", type: "text", width: 5 , name: "workTime", align: "center",  },
+            { title: "가동율", type: "text", width: 5 , name: "work_per", align: "center",  },
+            { title: "작업공수", type: "text", width: 30 , name: "prod_time", align: "center"  },
+            { title: "불량수량", type: "text", width: 30 , name: "loss_cnt", align: "center"  },
+            { title: "불량율", type: "text", width: 5 , name: "loss_per", align: "center",   }
+
+           
+        ]
+    });
+
+
+    //모니터링보드 그리드
+    $("#MonitorGrid").jsGrid({
+        width: "100%",
+        height: "auto",
+        editing: false,
+        autoload: true,
+        pageIndex:1,  
+        sorting: true,
+        paging: true,
+        controller:  {
+                loadData: function(filter) {
+                    var d = $.Deferred();
+                    $.ajax({
+                        type: "POST",
+                        url: "/getMonitordata",
+                        dataType: "JSON",
+                        data: {
+                            id:Erypto.decrypt(sessionStorage.getItem('ID')) 
+                        },
+                    }).done(function(response) {
+                        console.log('ok',response)
+                        //ALLselectedItems=response.data;
+                        // if(response.status == "OK") {
+                        //     $("#txtMsg").text('조회되었습니다.')
+                        // }else{
+                        //     $("#txtMsg").text('조회가 실패되었습니다.')
+                        // }
+                        let monit_data=[]
+                        let monit_set=[]
+                        response.data.forEach(element => 
+
+                            monit_data.push(element.board_addr)
+
+                        );
+                        response.data.forEach(element => 
+
+                            monit_set.push(element.board_sec)
+
+                        );
+
+                        sessionStorage.setItem('monit',monit_data)
+                        sessionStorage.setItem('set',monit_set)
+
+
+
+
+                        d.resolve(response.data);
+                        
+                    });
+                    return d.promise();
+                }
+
+            },
+ 
+        fields: [
+            { title: "ID", type: "text", width: 30 , name: "ID", align: "center"  },
             { title: "모니터링보드", type: "text", width: 5 , name: "board_name", align: "center",  },
             { title: "재생시간", type: "text", width: 30 , name: "board_sec", align: "center"  },
             {
@@ -906,13 +1358,12 @@ $(function(){
         ]
     });
 
-    
 
 
 
 
 
-    function login(){
+
 
     }
 });

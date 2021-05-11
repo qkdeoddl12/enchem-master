@@ -25,6 +25,8 @@ $(function(){
                     $("#txtWorkerMsg").text(`주 ${data.data[0].day_worker}명/ 야 ${data.data[0].night_worker}명`)
                   
 
+                }else{
+                    $("#txtWorkerMsg").text(`주 0명/ 야 0명`)
                 }
                 
                
@@ -33,6 +35,9 @@ $(function(){
 
             }
         });
+
+
+
     },1000)
      
 
@@ -62,6 +67,8 @@ var barcode="";
             barcode=barcode[0]
             if($(".active-button").text()=='입고'||$(".active-button").text()=='출고'||$(".active-button").text()=='불량'){
                 if(barcode!='RECEIVE'||barcode!='LOSS'||barcode!='SHIPPING'){
+
+                    
                     $.ajax({
                     url: "/createPOPData",
                     type: "POST",
@@ -356,6 +363,14 @@ var barcode="";
         height: "745px",
         editing: false,
         autoload: true,
+        pagerFormat: "{first} {prev} {pages} {next} {last}  {pageIndex} ~ {pageCount}",
+        pagePrevText: "이전",
+        pageNextText: "다음",
+        pageFirstText: "처음",
+        pageLastText: "마지막",
+        pageNavigatorNextText: "...",
+        pageNavigatorPrevText: "...",
+        pageButtonCount: 5,
         pageIndex:1,  
         sorting: true,
         paging: true,

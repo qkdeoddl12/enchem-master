@@ -71,10 +71,23 @@ $(function(){
 
                console.log('getDaydata',data.data)
 
-               day1_cnt=data.data[0].cnt//금일
-               day1_loss=data.data[0].loss//금일
-               day2_cnt=data.data[1].cnt//전일
-               day2_in=data.data[0].in_cnt//전일
+               let day1_cnt=0,day1_loss=0,day2_cnt=0,day2_in=0;
+
+            //    day1_cnt=data.data[0].cnt//금일
+            //    day1_loss=data.data[0].loss//금일
+            //    day2_cnt=data.data[1].cnt//전일
+            //    day2_in=data.data[0].in_cnt//전일
+
+             if(data.data[0]!=undefined){
+                     day1_cnt=data.data[0].cnt//금일
+                    day1_loss=data.data[0].loss//금일
+                    day1_in=data.data[0].in_cnt//금일
+               }
+
+               if(data.data[1]!=undefined){
+                    day2_cnt=data.data[1].cnt//전일
+                    day2_in=data.data[1].in_cnt//전일
+               }
 
                let day_diff_per=Math.round(day1_cnt/day2_cnt*100)
 
@@ -89,7 +102,7 @@ $(function(){
                     $('svg.radial-progress circle').css('stroke','rgb(83, 218, 241)')
                     $(".complete").css('stroke-dashoffset','220px')
                 }
-                $("#2ndCln_in").text(day2_in)
+                $("#2ndCln_in").text(day1_in)
                 $("#day2_cnt").text(`${day2_cnt}`)
                 $("#day1_cnt").text(`${day1_cnt}`)
 
@@ -136,6 +149,28 @@ $(function(){
             dataType: "JSON",
             success: function (data) {
 
+                let plc_data1=0,plc_data2=0,plc_data3=0,plc_data4=0,plc_data5=0;
+
+                if(data.data[0]!=undefined){
+                    plc_data1=nvl(data.data[0].cnt,0)
+                }
+
+                if(data.data[1]!=undefined){
+                    plc_data2=nvl(data.data[1].cnt,0)
+                }
+
+                if(data.data[2]!=undefined){
+                    plc_data3=nvl(data.data[2].cnt,0)
+                }
+
+                if(data.data[3]!=undefined){
+                    plc_data4=nvl(data.data[3].cnt,0)
+                }
+
+                if(data.data[4]!=undefined){
+                    plc_data5=nvl(data.data[4].cnt,0)
+                }
+
                console.log('getDayPlcdata',data.data)
                 $("#plcData_1").text(data.data[0].cnt)
                 $("#plcData_2").text(data.data[1].cnt)
@@ -170,6 +205,18 @@ $(function(){
 
             }
         });
+
+
+    function nvl(str, defaultStr){
+         
+        if(typeof str == "undefined" || str == null || str == "")
+            str = defaultStr ;
+         
+        return str ;
+    }
+
+
+
     }
 
 

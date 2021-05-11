@@ -14,6 +14,8 @@
     <link href="vendor/bootstrap-datepicker-master/dist/css/bootstrap-datepicker.css" rel="stylesheet">
     <link href="css/public.css" rel="stylesheet">
     <link href="css/index.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
+    <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
 
     <title>G-EMB Manager
     </title>
@@ -74,8 +76,9 @@
                     <li class="active"><a href="#MonitorMng" data-toggle="tab">모니터링보드</a></li>
                     <li><a href="#userMng" data-toggle="tab">사용자관리</a></li>
                     <li><a href="#systemMng" data-toggle="tab">시스템관리</a></li>
+                    <li><a href="#drumMng" data-toggle="tab">용기관리</a></li>
                     <li><a href="#historyMng" data-toggle="tab">이력조회</a></li>
-                    
+                    <li><a href="#statistics" data-toggle="tab">통계</a></li>
                 
                 </ul>
             </div>
@@ -85,6 +88,23 @@
                 <div class="tab-content">
                     <!-- 화면설정 -->
                     <div class="tab-pane active" id="MonitorMng">
+                        <div class="row">
+                            <!-- <button id="btnCreateUser" type="button"  data-toggle="modal" data-target="#userModal"
+                                                        class="btn btn-primary btn-lg">사용자생성</button>
+                                                        <div style="float: right;">
+                                                            <input type="text" name="" id="btn_search_user">
+                                                            <button id="btnSearch_total" type="button" class="btn btn-primary btn-lg">검색</button>
+                                                        </div> -->
+                        
+                        
+                        
+                           
+                            <div class="col-xs-1">
+                                <button id="btnAutoSlide" type="button" class="btn btn-primary btn-lg">자동슬라이드</button>
+                            </div>
+                        
+                        
+                        </div>
                         <div class="row">
                             <div class="col-xs-12">
                                 <div id="MonitorGrid"></div>
@@ -164,6 +184,59 @@
                             <div class="col-xs-12">
                                 <div id="historyGrid"></div>
                                 <div id="statsGrid"></div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <!--    용기관리 -->
+                    <div class="tab-pane" id="drumMng">
+                        <div class="row">
+                            <form role="form" class="form-inline">
+                                <div class="form-group">
+                                    <label for="dateStart_mng">일자</label>
+                                    <input type="text" name="input" id="dateStart_mng" /> ~
+                                    <input type="text" name="input" id="dateEnd_mng" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="txtStatus_mng">상태</label>
+                                    <select name="" id="txtStatus_mng">
+                                        <option value="">전체</option>
+                                    </select>
+                                </div>
+                                <button type="button" class="btn btn-primary" id="btnChangeShip">출고</button>
+                                <div class="form-group">
+                                    <label for="txtSearch_drum">검색</label>
+                                    <input type="text" class="form-control" id="txtSearch_drum">
+                                </div>
+                                <button type="button" class="btn btn-primary" id="btnDrumData">검색</button>
+                            </form>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div id="drumDataGrid"></div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!--    통계-->
+                    <div class="tab-pane" id="statistics">
+                        <div class="row">
+                            <form role="form" class="form-inline">
+                                <div class="form-group">
+                                    <label for="dateStart">일자</label>
+                                    <input type="text" name="input" id="dateStart_stat" /> ~
+                                    <input type="text" name="input" id="dateEnd_stat" />
+                                </div>
+                                <button type="button" class="btn btn-primary" id="btnStatistics">검색</button>
+                                <button type="button" class="btn btn-primary" id="btnExcelDown_stat">ExcelDown</button>
+                            </form>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div id="statisticsGrid"></div>
                             </div>
                         </div>
                     </div>
@@ -271,8 +344,11 @@
 
 
     <script src="vendor/jquery-3.5.1.js"></script>
+    <script src="vendor/carhartl-jquery-cookie-92b7715/jquery.cookie.js"></script>
+
     <script src="vendor/bootstrap-3.3.2-dist/js/bootstrap.js"></script>
     <script src="vendor/jsgrid-1.5.3/jsgrid.js"></script>
+    
     <script src="vendor/c3-master/c3.js"></script>
     <script src="vendor/Crypto/vendor/aes.js"></script>
     <script src="vendor/Crypto/vendor/aes-ctr.js"></script>

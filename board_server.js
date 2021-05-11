@@ -17,6 +17,7 @@ const excel = require('node-excel-export');
 const crypto = require('crypto');
 const aes256 = require('nodejs-aes256');
 var moment = require('moment');
+const date_val=`'2021-05-06'`
 
 
 
@@ -421,11 +422,20 @@ app.post('/getDailyTotaldata', function (request, response) {
 
 //일일 데이터
 function selectDailydata_diff(conn,callback){
-    let day_Query = `    SELECT DATE(CREATETIME) AS OUT_TIME,sum(if(LOSS='F',if(STATUS='O',1,0),0)) AS cnt,sum(if(LOSS='T',1,0)) AS loss,sum(if(STATUS='I',1,0)) AS in_cnt
-    FROM drum_data_log
-    WHERE DATE(CREATETIME) BETWEEN DATE_SUB(curdate(),INTERVAL 1 DAY) AND curdate()  AND STATUS IN ('O','I')
+    let day_Query = `   SELECT OUT_TIME,cnt,loss,in_cnt
+from (SELECT DATE(CREATETIME) AS OUT_TIME,sum(if(LOSS='T',1,0)) AS loss,sum(if(STATUS='I',1,0)) AS in_cnt
+    FROM drum_data_log  c
+    WHERE DATE(CREATETIME) BETWEEN DATE_SUB(${date_val},INTERVAL 1 DAY) AND ${date_val}  AND STATUS IN ('O','I')
     GROUP BY DATE(CREATETIME)
-    ORDER BY DATE(CREATETIME) DESC` 
+    ORDER BY DATE(CREATETIME) DESC) b
+    LEFT JOIN (
+	 	 SELECT DATE(CREATETIME) AS OUT_TIME2,COUNT(*) AS cnt
+    FROM drum_data
+    WHERE DATE(CREATETIME) BETWEEN DATE_SUB(${date_val},INTERVAL 1 DAY) AND ${date_val}  AND STATUS ='O' AND DELYN='N'
+    GROUP BY DATE(CREATETIME)
+    ORDER BY DATE(CREATETIME) DESC
+	 ) LOG2
+	 ON OUT_TIME=OUT_TIME2` 
 
     //console.log(day_Query)
 
@@ -471,25 +481,41 @@ function selectDailydata_diff(conn,callback){
 //주간 데이터
 function selectWeeklydata_diff(conn,callback){
     let day_Query = `   
-     select OUT_TIME,ifnull(cnt,0) as cnt,ifnull(loss,0) as loss,ifnull(in_cnt,0) as in_cnt from
-
- (SELECT '금주' AS OUT_TIME,sum(if(LOSS='F',if(STATUS='O',1,0),0)) AS cnt,sum(if(LOSS='T',1,0)) AS loss,sum(if(STATUS='I',1,0)) AS in_cnt
-    FROM drum_data_log
-    WHERE DATE(CREATETIME) BETWEEN  (SELECT ADDDATE(CURDATE(), - WEEKDAY(CURDATE()) + 0 ))
+         select OUT_TIME,ifnull(cnt,0) as cnt,ifnull(loss,0) as loss,ifnull(in_cnt,0) as in_cnt from
+(SELECT OUT_TIME,cnt,loss,in_cnt
+from (SELECT '금주' AS OUT_TIME,sum(if(LOSS='T',1,0)) AS loss,sum(if(STATUS='I',1,0)) AS in_cnt
+    FROM drum_data_log  c
+    WHERE DATE(CREATETIME) BETWEEN  (SELECT ADDDATE(${date_val}, - WEEKDAY(${date_val}) + 0 ))
     AND
-        (SELECT ADDDATE(CURDATE(), - WEEKDAY(CURDATE()) + 6 ))  AND (STATUS IN ('O','I') AND STATUS!='D' )
-        
-         
-         union
-        
-       SELECT '전주' AS OUT_TIME,sum(if(LOSS='F',if(STATUS='O',1,0),0)) AS cnt,sum(if(LOSS='T',1,0)) AS loss,sum(if(STATUS='I',1,0)) AS in_cnt
-    FROM drum_data_log
-    WHERE DATE(CREATETIME) BETWEEN ADDDATE( DATE_SUB(CURDATE(),INTERVAL 1 WEEK), - WEEKDAY(DATE_SUB(CURDATE(),INTERVAL 1 WEEK)) + 0 ) 
+        (SELECT ADDDATE(${date_val}, - WEEKDAY(${date_val}) + 6 ))  AND STATUS IN ('O','I')
+    ) b
+    LEFT JOIN (
+	 	 SELECT '금주' AS OUT_TIME2,COUNT(*) AS cnt
+    FROM drum_data
+    WHERE DATE(CREATETIME) BETWEEN  (SELECT ADDDATE(${date_val}, - WEEKDAY(${date_val}) + 0 ))
+    AND
+        (SELECT ADDDATE(${date_val}, - WEEKDAY(${date_val}) + 6 ))  AND STATUS ='O' AND DELYN='N'
+	 ) LOG2
+	 ON OUT_TIME=OUT_TIME2
+	 union
+	 SELECT OUT_TIME,cnt,loss,in_cnt
+from (SELECT '전주' AS OUT_TIME,sum(if(LOSS='T',1,0)) AS loss,sum(if(STATUS='I',1,0)) AS in_cnt
+    FROM drum_data_log  c
+    WHERE DATE(CREATETIME) BETWEEN  ADDDATE( DATE_SUB(${date_val},INTERVAL 1 WEEK), - WEEKDAY(DATE_SUB(${date_val},INTERVAL 1 WEEK)) + 0 ) 
                  
                  and
-                          ADDDATE( DATE_SUB(CURDATE(),INTERVAL 1 WEEK), - WEEKDAY(DATE_SUB(CURDATE(),INTERVAL 1 WEEK)) + 6 )  AND (STATUS IN ('O','I') AND STATUS!='D' )
-                          
-                          ) d3
+                          ADDDATE( DATE_SUB(${date_val},INTERVAL 1 WEEK), - WEEKDAY(DATE_SUB(${date_val},INTERVAL 1 WEEK)) + 6 )  AND STATUS IN ('O','I')
+    ) b
+    LEFT JOIN (
+	 	 SELECT '전주' AS OUT_TIME2,COUNT(*) AS cnt
+    FROM drum_data
+    WHERE DATE(CREATETIME) BETWEEN  ADDDATE( DATE_SUB(${date_val},INTERVAL 1 WEEK), - WEEKDAY(DATE_SUB(${date_val},INTERVAL 1 WEEK)) + 0 ) 
+                 
+                 and
+                          ADDDATE( DATE_SUB(${date_val},INTERVAL 1 WEEK), - WEEKDAY(DATE_SUB(${date_val},INTERVAL 1 WEEK)) + 6 )   AND STATUS ='O' AND DELYN='N'
+	 ) LOG2
+	 ON OUT_TIME=OUT_TIME2) d3
+    
     ` 
 
     //console.log(day_Query)
@@ -535,20 +561,30 @@ function selectWeeklydata_diff(conn,callback){
 
 //월별 데이터
 function selectMonthlydata_diff(conn,callback){
-    let day_Query = `         select OUT_TIME,ifnull(cnt,0) as cnt,ifnull(loss,0) as loss,ifnull(in_cnt,0) as in_cnt from 
-
- (SELECT '금월' AS OUT_TIME,sum(if(LOSS='F',if(STATUS='O',1,0),0)) AS cnt,sum(if(LOSS='T',1,0)) AS loss,sum(if(STATUS='I',1,0)) AS in_cnt
-    FROM drum_data_log
-    WHERE DATE_FORMAT(date(CREATETIME),'%Y-%m')=DATE_FORMAT(curdate(),'%Y-%m')  AND (STATUS IN ('O','I') AND STATUS!='D' )
-        
-         
-         union
-        
-       SELECT '전월' AS OUT_TIME,sum(if(LOSS='F',if(STATUS='O',1,0),0)) AS cnt,sum(if(LOSS='T',1,0)) AS loss,sum(if(STATUS='I',1,0)) AS in_cnt
-    FROM drum_data_log
-    WHERE DATE_FORMAT(date(CREATETIME),'%Y-%m')=DATE_FORMAT(DATE_SUB(now(), INTERVAL 1 MONTH),'%Y-%m')  AND (STATUS IN ('O','I') AND STATUS!='D' )
-                          
-                          ) d3
+    let day_Query = `     select OUT_TIME,ifnull(cnt,0) as cnt,ifnull(loss,0) as loss,ifnull(in_cnt,0) as in_cnt from
+(SELECT OUT_TIME,cnt,loss,in_cnt
+from (SELECT '금월' AS OUT_TIME,sum(if(LOSS='T',1,0)) AS loss,sum(if(STATUS='I',1,0)) AS in_cnt
+    FROM drum_data_log  c
+    WHERE DATE_FORMAT(date(CREATETIME),'%Y-%m')=DATE_FORMAT(${date_val},'%Y-%m')  AND STATUS IN ('O','I')
+    ) b
+    LEFT JOIN (
+	 	 SELECT '금월' AS OUT_TIME2,COUNT(*) AS cnt
+    FROM drum_data
+    WHERE DATE_FORMAT(date(CREATETIME),'%Y-%m')=DATE_FORMAT(${date_val},'%Y-%m')  AND STATUS ='O' AND DELYN='N'
+	 ) LOG2
+	 ON OUT_TIME=OUT_TIME2
+	 union
+	 SELECT OUT_TIME,cnt,loss,in_cnt
+from (SELECT '전월' AS OUT_TIME,sum(if(LOSS='T',1,0)) AS loss,sum(if(STATUS='I',1,0)) AS in_cnt
+    FROM drum_data_log  c
+    WHERE DATE_FORMAT(date(CREATETIME),'%Y-%m')=DATE_FORMAT(DATE_SUB(${date_val}, INTERVAL 1 MONTH),'%Y-%m')   AND STATUS IN ('O','I')
+    ) b
+    LEFT JOIN (
+	 	 SELECT '전월' AS OUT_TIME2,COUNT(*) AS cnt
+    FROM drum_data
+    WHERE DATE_FORMAT(date(CREATETIME),'%Y-%m')=DATE_FORMAT(DATE_SUB(${date_val}, INTERVAL 1 MONTH),'%Y-%m')  AND STATUS ='O' AND DELYN='N'
+	 ) LOG2
+	 ON OUT_TIME=OUT_TIME2) d3
 
 ` 
 
@@ -597,7 +633,7 @@ function selectMonthlydata_diff(conn,callback){
 function selectDailydata_plc(conn,callback){
   
     let plc_Query = `SELECT unit_id,max(prod_cnt) AS cnt FROM plc_log
-    WHERE DATE(CONCAT('20',createTime))=curdate() GROUP BY unit_id order by unit_id asc` 
+    WHERE DATE(CONCAT('20',createTime))=${date_val} GROUP BY unit_id order by unit_id asc` 
     
     //console.log(plc_Query)
 
@@ -631,9 +667,9 @@ function selectWeeklydata_plc(conn,callback){
     let plc_Query = `      SELECT unit_id,SUM(cnt) AS cnt FROM 
         (SELECT DATE(CONCAT('20',createTime)),unit_id,max(prod_cnt) AS cnt FROM plc_log
     WHERE DATE(CONCAT('20',createTime)) BETWEEN
-        (SELECT ADDDATE(CURDATE(), - WEEKDAY(CURDATE()) + 0 ))
+        (SELECT ADDDATE(${date_val}, - WEEKDAY(${date_val}) + 0 ))
     AND
-        (SELECT ADDDATE(CURDATE(), - WEEKDAY(CURDATE()) + 6 )) AND CURDATE() GROUP BY DATE(CONCAT('20',createTime)),unit_id order by unit_id ASC) prod
+        (SELECT ADDDATE(${date_val}, - WEEKDAY(${date_val}) + 6 )) AND ${date_val} GROUP BY DATE(CONCAT('20',createTime)),unit_id order by unit_id ASC) prod
         GROUP BY  unit_id` 
     
     //console.log(plc_Query)
@@ -666,7 +702,7 @@ function selectMonthlydata_plc(conn,callback){
   
     let plc_Query = `       SELECT unit_id,SUM(cnt) AS cnt FROM 
         (SELECT DATE(CONCAT('20',createTime)),unit_id,max(prod_cnt) AS cnt FROM plc_log
-    WHERE DATE_FORMAT(DATE(CONCAT('20',createTime)),'%Y-%m')=DATE_FORMAT(curdate(),'%Y-%m') AND CURDATE() GROUP BY DATE(CONCAT('20',createTime)),unit_id order by unit_id ASC) prod
+    WHERE DATE_FORMAT(DATE(CONCAT('20',createTime)),'%Y-%m')=DATE_FORMAT(${date_val},'%Y-%m') AND ${date_val} GROUP BY DATE(CONCAT('20',createTime)),unit_id order by unit_id ASC) prod
         GROUP BY  unit_id
 ` 
     
@@ -704,7 +740,7 @@ SELECT unit_id,DATE_FORMAT(SEC_TO_TIME(SUM(action1+action2+action3)/10), '%H:%i:
 TIMEDIFF(DATE_FORMAT(concat('20',max(createTime)), '%Y-%m-%d %H:%i:%s'),DATE_FORMAT(concat('20',min(createTime)), '%Y-%m-%d %H:%i:%s')) as workTime,max(prod_cnt) as prod_cnt
  FROM 
 (SELECT createTime,unit_id,max(action1) AS action1,max(action2) AS action2,max(action3) AS action3,work_YN,prod_cnt FROM plc_log
-WHERE prod_cnt<>0 AND DATE(CONCAT('20',createTime))=curdate()
+WHERE prod_cnt<>0 AND DATE(CONCAT('20',createTime))=${date_val}
 GROUP BY unit_id,prod_cnt) m
 GROUP BY unit_id
 ` 
@@ -742,7 +778,7 @@ SELECT unit_id,DATE_FORMAT(SEC_TO_TIME(SUM(action1+action2+action3)/10), '%H:%i:
 TIMEDIFF(DATE_FORMAT(concat('20',max(createTime)), '%Y-%m-%d %H:%i:%s'),DATE_FORMAT(concat('20',min(createTime)), '%Y-%m-%d %H:%i:%s')) as workTime,max(prod_cnt) as prod_cnt
  FROM 
 (SELECT createTime,unit_id,max(action1) AS action1,max(action2) AS action2,max(action3) AS action3,work_YN,prod_cnt FROM plc_log
-WHERE prod_cnt<>0 AND DATE_FORMAT(DATE(CONCAT('20',createTime)),'%Y-%m')=DATE_FORMAT(curdate(),'%Y-%m') 
+WHERE prod_cnt<>0 AND DATE_FORMAT(DATE(CONCAT('20',createTime)),'%Y-%m')=DATE_FORMAT(${date_val},'%Y-%m') 
 GROUP BY unit_id,prod_cnt) m
 GROUP BY unit_id
 ` 
@@ -776,7 +812,7 @@ function selectDailydata_man(conn,callback){
   
     let plc_Query = `     
                     select day_worker from tbl_worker_info
-                    where date(work_date)='2021-04-23'
+                    where date(work_date)=${date_val}
                     ` 
     
     //console.log(plc_Query)
@@ -852,20 +888,20 @@ order by DATE(CONCAT('20',createTime)) desc`
 function selectData_washTime(conn,callback){
   
     let plc_Query = `     
-          SELECT '전일' as day,ROUND(IFNULL((TIME_TO_SEC('12:00:00')/60)/SUM(prod_cnt),0)) as prod_min FROM  
-        (SELECT unit_id,SEC_TO_TIME(SUM(action1+action2+action3)/10) as realTIme,max(prod_cnt) as prod_cnt
+          SELECT '전일' as day,ROUND(IFNULL((TIME_TO_SEC('10:30:00')/60)/SUM(prod_cnt)*worker,0),2) as prod_min FROM  
+        (SELECT unit_id,SEC_TO_TIME(SUM(action1+action2+action3)/10) as realTIme,max(prod_cnt) as prod_cnt,worker
         FROM 
         (SELECT createTime,unit_id,max(action1) AS action1,max(action2) AS action2,max(action3) AS action3,work_YN,prod_cnt FROM plc_log
-        WHERE prod_cnt<>0 AND DATE(CONCAT('20',createTime))=DATE_ADD(CURDATE(),INTERVAL -1 day) 
-        GROUP BY unit_id,prod_cnt) m
+        WHERE prod_cnt<>0 AND DATE(CONCAT('20',createTime))=DATE_ADD(${date_val},INTERVAL -1 day) 
+        GROUP BY unit_id,prod_cnt) m,(SELECT day_worker+night_worker AS worker FROM tbl_worker_info where date(work_date)=DATE_ADD(${date_val},INTERVAL -1 day) ) worker
         GROUP BY unit_id) d
         UNION 
-        SELECT '금일' day,ROUND(IFNULL((sum(realTime)/60)/SUM(prod_cnt),0)) as prod_min FROM 
-        (SELECT unit_id,SEC_TO_TIME(SUM(action1+action2+action3)/10) as realTIme,max(prod_cnt) as prod_cnt
+        SELECT '금일' day,ROUND(IFNULL((TIME_TO_SEC('10:30:00')/60)/(UM(prod_cnt)*worker,0),2) as prod_min FROM 
+        (SELECT unit_id,SEC_TO_TIME(SUM(action1+action2+action3)/10) as realTIme,max(prod_cnt) as prod_cnt,worker
         FROM 
         (SELECT createTime,unit_id,max(action1) AS action1,max(action2) AS action2,max(action3) AS action3,work_YN,prod_cnt FROM plc_log
-        WHERE prod_cnt<>0 AND DATE(CONCAT('20',createTime))=CURDATE() 
-        GROUP BY unit_id,prod_cnt) m
+        WHERE prod_cnt<>0 AND DATE(CONCAT('20',createTime))=${date_val}
+        GROUP BY unit_id,prod_cnt) m,(SELECT day_worker+night_worker AS worker FROM tbl_worker_info where date(work_date)=${date_val}) worker
         GROUP BY unit_id) d
 ` 
     
@@ -928,12 +964,12 @@ function selectData_lossData(conn,callback){
   
     let plc_Query = `       
 SELECT DAY,loss_date,loss_cnt FROM 
-(SELECT '전일' AS day,date(CREATETIME) as loss_date,SUM(if(LOSS='T',1,0)) AS loss_cnt FROM drum_data_log
+(SELECT '전일' AS day,date(CREATETIME) as loss_date,SUM(if(LOSS='T',1,0)) AS loss_cnt FROM drum_data
 GROUP BY date(CREATETIME) 
 ORDER BY date(CREATETIME) desc LIMIT 1 OFFSET 1) d
 UNION
 SELECT DAY,loss_date,loss_cnt FROM 
-(SELECT '금일' AS day,date(CREATETIME) AS loss_date,SUM(if(LOSS='T',1,0)) AS loss_cnt FROM drum_data_log
+(SELECT '금일' AS day,date(CREATETIME) AS loss_date,SUM(if(LOSS='T',1,0)) AS loss_cnt FROM drum_data
 GROUP BY date(CREATETIME) 
 ORDER BY date(CREATETIME) desc LIMIT 1 OFFSET 0) d` 
     
@@ -1006,10 +1042,24 @@ ORDER BY date(CREATETIME) desc LIMIT 1 OFFSET 0) d`
 //일일 종합현황 - 일일 생산수량 및 불량률
 function selectData_prodTotal(conn,callback){
   
+//     let plc_Query = `       
+// SELECT loss_date,prod_cnt,round(loss_cnt/prod_cnt*100) as loss_per
+// from
+// (SELECT date(CREATETIME) as loss_date,SUM(if(LOSS='T',1,0)) AS loss_cnt FROM drum_data
+// GROUP BY date(CREATETIME) 
+// ORDER BY date(CREATETIME) desc LIMIT 7 ) d1
+// LEFT join
+// (SELECT '금일' AS day,date(CREATETIME) AS prod_date,SUM(if(LOSS='F',1,0)) AS prod_cnt FROM drum_data
+// WHERE LOSS='F' AND STATUS='O'
+// GROUP BY date(CREATETIME) 
+// ORDER BY date(CREATETIME) desc LIMIT 7) d2
+// ON d1.loss_date=d2.prod_date
+// ORDER BY loss_date asc
+// ` 
     let plc_Query = `       
-SELECT loss_date,prod_cnt,round(loss_cnt/prod_cnt*100) as loss_per
+SELECT loss_date,prod_cnt,loss_cnt as loss_per
 from
-(SELECT date(CREATETIME) as loss_date,SUM(if(LOSS='T',1,0)) AS loss_cnt FROM drum_data_log
+(SELECT date(CREATETIME) as loss_date,SUM(if(LOSS='T',1,0)) AS loss_cnt FROM drum_data
 GROUP BY date(CREATETIME) 
 ORDER BY date(CREATETIME) desc LIMIT 7 ) d1
 LEFT join
@@ -1062,8 +1112,8 @@ ORDER BY loss_date asc
 function selectCurrentDate_Daily(conn,callback){
   
     let plc_Query = `       
-	SELECT DATE_FORMAT(curdate(),'%m월 %d일') as date_data,day_worker,night_worker FROM tbl_worker_info
-	WHERE date(work_date)=CURDATE()
+	SELECT DATE_FORMAT(${date_val},'%m월 %d일') as date_data,day_worker,night_worker FROM tbl_worker_info
+	WHERE date(work_date)=${date_val}
 ` 
 
     
@@ -1108,9 +1158,9 @@ function selectCurrentDate_Weekly(conn,callback){
     let plc_Query = `       
  SELECT DATE_FORMAT(min(DATE(CREATETIME)),'%m월 %d일') AS startDate ,DATE_FORMAT(MAX(DATE(CREATETIME)),'~ %d일') AS endDate FROM drum_data
 where DATE(CREATETIME) BETWEEN
-        (SELECT ADDDATE(CURDATE(), - WEEKDAY(CURDATE()) + 0 ))
+        (SELECT ADDDATE(${date_val}, - WEEKDAY(${date_val}) + 0 ))
     AND
-        (SELECT ADDDATE(CURDATE(), - WEEKDAY(CURDATE()) + 6 )) AND CURDATE()
+        (SELECT ADDDATE(${date_val}, - WEEKDAY(${date_val}) + 6 )) AND ${date_val}
 ` 
 
     
@@ -1157,7 +1207,7 @@ function selectCurrentDate_Monthly(conn,callback){
   
     let plc_Query = `       
  SELECT DATE_FORMAT(min(DATE(CREATETIME)),'%m월 %d일') AS startDate ,DATE_FORMAT(MAX(DATE(CREATETIME)),'~ %d일') AS endDate FROM drum_data
-where DATE_FORMAT(DATE(CREATETIME),'%Y-%m')=DATE_FORMAT(curdate(),'%Y-%m')
+where DATE_FORMAT(DATE(CREATETIME),'%Y-%m')=DATE_FORMAT(${date_val},'%Y-%m')
 ` 
 
     
@@ -1205,7 +1255,7 @@ function selectCheckPLCCon(conn,callback){
     let plc_Query = `       
 
 select unit_id,status FROM (SELECT startTime,unit_id,status FROM plc_log_work
-WHERE DATE(startTime)=curdate()   ORDER BY startTime DESC LIMIT 10) plc
+WHERE DATE(startTime)=${date_val}   ORDER BY startTime DESC LIMIT 10) plc
 GROUP BY unit_id
 ` 
 

@@ -1,0 +1,35 @@
+name: detect runtime error
+
+on:
+  schedule:
+    - cron: '0 22 * * *'
+jobs:
+  makeUrl:
+    runs-on: ubuntu-latest
+    env:
+      WORKING_DIRECTORY: ./packages/toast-ui.grid
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v2
+      - name: create config variable
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: |
+          node scripts/createConfigVariable.js
+      - name: set global error variable
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: |
+          echo "ERROR_VARIABLE=$(head -n 1 ./errorVariable.txt)" >> $GITHUB_ENV
+      - name: set url
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        shell: bash
+        run: |
+          echo "URLS=$(head -n 1 ./url.txt)" >> $GITHUB_ENV
+      - name: detect runtime error
+        uses: nhn/toast-ui.detect-runtime-error-actions@master
+        with:
+          global-error-log-variable: ${{ env.ERROR_VARIABLE }}
+          urls: ${{ env.URLS }}
+          browserlist: ie10, ie11, safari, edge, firefox, chrome
+        env:
+          BROWSERSTACK_USERNAME: ${{secrets.BROWSERSTACK_USERNAME}}
+          BROWSERSTACK_ACCESS_KEY: ${{secrets.BROWSERSTACK_ACCESS_KEY}}

@@ -220,17 +220,17 @@ var chart2 = c3.generate({
             dataType: "JSON",
             success: function (data) {
 
-               console.log('getDailyEquipdata',data)
+               //console.log('getDailyEquipdata',data)
 
                let equip_data=data.equip[0], man=data.man[0][0].day_worker,daily_trend=data.daily_trend[0]
                let date_data=['날짜'],equip_list=[],result_data=[],chart_data=[]
                
 
-               console.log('daily_trend',daily_trend)
+               //console.log('daily_trend',daily_trend)
 
 
                equip_data.forEach(function(item,index,arr2){ 
-                    console.log(item,index);
+                    //console.log(item,index);
                     // $(`#plcData_status_${index+1}`).val(i)
                     $(`#plcData_workTime_${index+1}`).text(item.workTime)
                     $(`#plcData_realTIme_${index+1}`).text(item.realTIme)
@@ -238,7 +238,7 @@ var chart2 = c3.generate({
                 })
 
                 daily_trend.forEach(function(item,index,arr2){ 
-                    console.log(item,index);
+                    //console.log(item,index);
                     // $(`#plcData_status_${index+1}`).val(i)
                     if(item.createTime!==null){
                         date_data.push(item.createTime) 
@@ -256,14 +256,14 @@ var chart2 = c3.generate({
                 equip_list=Array.from(new Set(equip_list));
 
 
-                console.log('date_data',date_data,'equip_list',equip_list)
+                //console.log('date_data',date_data,'equip_list',equip_list)
 
                 
                 equip_list.forEach(function(item,index,arr2){  
-                    console.log('item',item,index);
+                    //console.log('item',item,index);
                         result_data.push([item+'호기'])
                       daily_trend.forEach(function(item2,index2,arr3){ 
-                        console.log('item2',item2,index2);
+                        //console.log('item2',item2,index2);
                         if(item==item2.unit_id){
                               result_data[index].push(item2.prod_cnt)
                         }
@@ -282,7 +282,7 @@ var chart2 = c3.generate({
 
                 })
 
-                 console.log('chart_data',chart_data)
+                 //console.log('chart_data',chart_data)
 
 
 
@@ -291,7 +291,7 @@ var chart2 = c3.generate({
                 });
 
                 data.plc[0].forEach(function(item,index,arr2){  
-                    console.log('item',item,index);
+                    //console.log('item',item,index);
                         //$("#wash_Grid_1 tr:eq(2) td:eq(1)")
 
                         let status_val="image/error.png";
@@ -388,7 +388,7 @@ var chart2 = c3.generate({
             dataType: "JSON",
             success: function (data) {
 
-               console.log('getDailyTotaldata',data)
+               //console.log('getDailyTotaldata',data)
 
             //    let equip_data=data.equip[0], man=data.man[0][0].day_worker,daily_trend=data.daily_trend[0]
             //    let date_data=['날짜'],equip_list=[],result_data=[],chart_data=[]
@@ -399,22 +399,30 @@ var chart2 = c3.generate({
                 let workProd_day1=(data.workProd[0][0].prod_cnt/data.worker[0][0].worker_cnt).toFixed(0)
                 let workProd_day2=(data.workProd[0][1].prod_cnt/data.worker[0][1].worker_cnt).toFixed(0)
 
-                let workTime_day1=data.washTime[0][0].prod_min
-                let workTime_day2=data.washTime[0][1].prod_min
+
+
+                let workTime_day1=0
+                let workTime_day2=0
+
+                if(data.washTime[0][0]!=undefined){
+                    workTime_day1=data.washTime[0][0].prod_min
+                    workTime_day2=data.washTime[0][1].prod_min
+                }
+                
 
 
                 let loss_day1=data.loss[0][0].loss_cnt
                 let loss_day2=data.loss[0][1].loss_cnt
-                let total_date=['날짜'],prod_data=['생산량'],lossPer_data=['불량율']
+                let total_date=['날짜'],prod_data=['생산량'],lossPer_data=['불량수량']
 
 
               
 
-                console.log('data.total',data.total)
+                //console.log('data.total',data.total)
 
 
                 data.total[0].forEach(function(item,index,arr2){  
-                    console.log('item',item,index);
+                    //console.log('item',item,index);
                         total_date.push(item.loss_date)
                         prod_data.push(item.prod_cnt)
                         lossPer_data.push(item.loss_per)
@@ -425,7 +433,7 @@ var chart2 = c3.generate({
                 
 
 0
-               console.log(data.workProd[0],data.worker[0])
+               //console.log(data.workProd[0],data.worker[0])
 
 
                $("#txtProd_day1").text(workProd_day1)
@@ -464,7 +472,7 @@ var chart2 = c3.generate({
                 chart2_data.push(total_date)
                 chart2_data.push(prod_data)
                 chart2_data.push(lossPer_data)
-                console.log('chart2',chart2_data)
+                //console.log('chart2',chart2_data)
 
                  chart2.load({
                     columns:  chart2_data
