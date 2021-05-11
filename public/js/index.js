@@ -123,31 +123,7 @@ $(function(){
     //     });
     
 
-    $("#selectAllCheckbox_d").change(function(item) {
-                selectedItems = [];
-                console.log('selectAllCheckbox_d')
-                //selectedItems=ALLselectedItems
-                if(this.checked) { // check select status
-                    $('.singleCheckbox_d').each(function() {
 
-                     console.log('selectAllCheckbox_d',true)
-                        this.checked = true;
-
-
-
-
-                        selectItem($(this).attr('data-index'));
-                    });
-                }else {
-
-                    $('.singleCheckbox_d').each(function() {
-                        this.checked = false;
-                             console.log('selectAllCheckbox_d',false)
-                        unselectItem($(this).attr('data-index'));
-                    });
-                    selectedItems = [];
-                }
-            });
 
 
  
@@ -1279,6 +1255,9 @@ $(function(){
         pageIndex:1,  
         sorting: true,
         paging: true,
+        onPageChanged: function(args) {
+        console.log(args.pageIndex);
+        },
         controller:  {
                 loadData: function(filter) {
                     var d = $.Deferred();
@@ -1313,6 +1292,8 @@ $(function(){
                         sessionStorage.setItem('monit',monit_data)
                         sessionStorage.setItem('set',monit_set)
 
+                        
+
 
 
 
@@ -1331,6 +1312,33 @@ $(function(){
             {
 
                     itemTemplate: function(_, item) {
+
+                            $("#selectAllCheckbox_d").click(function(item) {
+                selectedItems = [];
+                console.log('selectAllCheckbox_d')
+                //selectedItems=ALLselectedItems
+                if(this.checked) { // check select status
+                    $('.singleCheckbox_d').each(function() {
+
+                     console.log('selectAllCheckbox_d',true)
+                        this.checked = true;
+
+
+
+
+                        selectItem($(this).attr('data-index'));
+                    });
+                }else {
+
+                    $('.singleCheckbox_d').each(function() {
+                        this.checked = false;
+                             console.log('selectAllCheckbox_d',false)
+                        unselectItem($(this).attr('data-index'));
+                    });
+                    selectedItems = [];
+                }
+            });
+
                         
 
                             return $('<button type="button" class="btn btn-primary"' +
