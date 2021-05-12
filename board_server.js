@@ -888,7 +888,7 @@ order by DATE(CONCAT('20',createTime)) desc`
 function selectData_washTime(conn,callback){
   
     let plc_Query = `     
-          SELECT '전일' as day,ROUND(IFNULL((TIME_TO_SEC('10:30:00')/60)/SUM(prod_cnt)*worker,0),2) as prod_min FROM  
+          SELECT '전일' as day,ROUND(IFNULL(630/SUM(prod_cnt)*worker,0),2) as prod_min FROM  
         (SELECT unit_id,SEC_TO_TIME(SUM(action1+action2+action3)/10) as realTIme,max(prod_cnt) as prod_cnt,worker
         FROM 
         (SELECT createTime,unit_id,max(action1) AS action1,max(action2) AS action2,max(action3) AS action3,work_YN,prod_cnt FROM plc_log
@@ -896,7 +896,7 @@ function selectData_washTime(conn,callback){
         GROUP BY unit_id,prod_cnt) m,(SELECT day_worker+night_worker AS worker FROM tbl_worker_info where date(work_date)=DATE_ADD(${date_val},INTERVAL -1 day) ) worker
         GROUP BY unit_id) d
         UNION 
-        SELECT '금일' day,ROUND(IFNULL((TIME_TO_SEC('10:30:00')/60)/(UM(prod_cnt)*worker,0),2) as prod_min FROM 
+        SELECT '금일' day,ROUND(IFNULL(630/60)/(UM(prod_cnt)*worker,0),2) as prod_min FROM 
         (SELECT unit_id,SEC_TO_TIME(SUM(action1+action2+action3)/10) as realTIme,max(prod_cnt) as prod_cnt,worker
         FROM 
         (SELECT createTime,unit_id,max(action1) AS action1,max(action2) AS action2,max(action3) AS action3,work_YN,prod_cnt FROM plc_log
